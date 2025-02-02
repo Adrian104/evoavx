@@ -22,7 +22,10 @@
 #include <unistd.h>
 #endif
 
+#include <array>
+#include <concepts>
 #include <cstdint>
+#include <type_traits>
 
 namespace evo
 {
