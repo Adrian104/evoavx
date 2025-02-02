@@ -1,0 +1,17 @@
+project(evoavx LANGUAGES CXX)
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME} INTERFACE "${PROJECT_SOURCE_DIR}/include")
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+
+if((CMAKE_SYSTEM_NAME STREQUAL "Windows") AND (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
+	target_compile_definitions(${PROJECT_NAME} INTERFACE EVO_OS_WINDOWS)
+	target_compile_options(${PROJECT_NAME} INTERFACE /W4 /arch:AVX512)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	target_compile_definitions(${PROJECT_NAME} INTERFACE EVO_OS_LINUX)
+	target_compile_options(${PROJECT_NAME} INTERFACE -Wall -Wextra -Wpedantic)
+	target_compile_options(${PROJECT_NAME} INTERFACE -mavx512f -mavx512cd -mavx512vl -mavx512bw -mavx512dq)
+	target_compile_options(${PROJECT_NAME} INTERFACE -mavx512ifma -mavx512vbmi -mavx512vbmi2 -mavx512bitalg)
+else()
+	message(WARNING "Unsupported compiler and/or operating system")
+endif()
