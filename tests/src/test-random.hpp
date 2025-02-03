@@ -97,7 +97,7 @@ TEST_CASE("Method range_512i_52(u64_t) works as expected")
 	constexpr static int s_iterations = 1 << 10;
 
 	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
-	evo::u64_t range = 1ULL << 50;
+	evo::u64_t range = (1ULL << 50) + (1ULL << 40);
 
 	__m512i sum = _mm512_setzero_si512();
 	__m512i max = _mm512_set1_epi64(0);
@@ -132,6 +132,8 @@ TEST_CASE("Method range_512i_52(__m512i) works as expected")
 	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
 
 	__m512i range = _mm512_set_epi64(1ULL << 43, 1ULL << 44, 1ULL << 45, 1ULL << 46, 1ULL << 47, 1ULL << 48, 1ULL << 49, 1ULL << 50);
+	range = _mm512_add_epi64(range, _mm512_set1_epi64(1ULL << 40));
+
 	__m512i sum = _mm512_setzero_si512();
 	__m512i max = _mm512_set1_epi64(0);
 
@@ -150,8 +152,8 @@ TEST_CASE("Method range_512i_52(__m512i) works as expected")
 
 	for (evo::u64_t i = 0; i < 8; i++)
 	{
-		evo::u64_t mx = 1ULL << (50 - i);
-		double target = static_cast<double>(1ULL << (49 - i));
+		evo::u64_t mx = (1ULL << (50 - i)) + (1ULL << 40);
+		double target = static_cast<double>((1ULL << (49 - i)) + (1ULL << 39));
 
 		REQUIRE_THAT(static_cast<double>(sumArr[i]) / s_iterations, Catch::Matchers::WithinRel(target, 0.1));
 		REQUIRE(maxArr[i] < mx);
