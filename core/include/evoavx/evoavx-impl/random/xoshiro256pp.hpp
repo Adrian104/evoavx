@@ -17,7 +17,7 @@ namespace evo
 		void init(u64_t seed) noexcept;
 		void step() noexcept;
 		void jump() noexcept;
-		__m512i next() noexcept;
+		__m512i next_512i() noexcept;
 	};
 }
 
@@ -112,7 +112,7 @@ namespace evo
 	}
 
 	template <cc::basic_prng_engine SeederT>
-	inline __m512i Xoshiro256pp<SeederT>::next() noexcept
+	inline __m512i Xoshiro256pp<SeederT>::next_512i() noexcept
 	{
 		__m512i result = _mm512_add_epi64(m_state[0], m_state[3]);
 		result = _mm512_rol_epi64(result, 23);
