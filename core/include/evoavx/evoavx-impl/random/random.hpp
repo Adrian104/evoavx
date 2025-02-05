@@ -1,5 +1,6 @@
 #pragma once
 #include "../global.hpp"
+#include "../utils.hpp"
 
 namespace evo::cc
 {
@@ -30,6 +31,11 @@ namespace evo
 	{
 	public:
 		__m512d next_512d() noexcept;
+		__m512i range_512i(__m512i range) noexcept;
+		__m512i range_512i(__m512i range, __m512i t) noexcept;
+
+		static __m512i compute_t(u64_t range) noexcept;
+		static __m512i compute_t(__m512i range) noexcept;
 	};
 }
 
@@ -43,5 +49,69 @@ namespace evo
 		__m512d converted = _mm512_cvtepu64_pd(shifted);
 
 		return _mm512_mul_pd(converted, _mm512_set1_pd(0x1.0p-53));
+	}
+
+	template <cc::wide_prng_engine EngineT>
+	inline __m512i Random<EngineT>::range_512i(__m512i range) noexcept
+	{
+		__m512i source = EngineT::next_512i();
+		__m512i low = _mm512_mullo_epi64(source, range);
+		__mmask8 mask = _mm512_cmplt_epu64_mask(low, range);
+
+		if (_cvtmask8_u32(mask)) [[unlikely]]
+		{
+			__m512i t = compute_t(range);
+			mask = _mm512_cmplt_epu64_mask(low, t);
+
+			while (_cvtmask8_u32(mask))
+			{
+				source = EngineT::next_512i();
+				low = _mm512_mullo_epi64(source, range);
+				mask = _mm512_cmplt_epu64_mask(low, t);
+			}
+		}
+
+		return mulhi_512i64(source, range);
+	}
+
+	template <cc::wide_prng_engine EngineT>
+	inline __m512i Random<EngineT>::range_512i(__m512i range, __m512i t) noexcept
+	{
+		__m512i source = EngineT::next_512i();
+		__m512i low = _mm512_mullo_epi64(source, range);
+		__mmask8 mask = _mm512_cmplt_epu64_mask(low, t);
+
+		while (_cvtmask8_u32(mask)) [[unlikely]]
+		{
+			source = EngineT::next_512i();
+			low = _mm512_mullo_epi64(source, range);
+			mask = _mm512_cmplt_epu64_mask(low, t);
+		}
+
+		return mulhi_512i64(source, range);
+	}
+
+	template <cc::wide_prng_engine EngineT>
+	inline __m512i Random<EngineT>::compute_t(u64_t range) noexcept
+	{
+		return _mm512_set1_epi64(-range % range);
+	}
+
+	template <cc::wide_prng_engine EngineT>
+	inline __m512i Random<EngineT>::compute_t(__m512i range) noexcept
+	{
+		u64_t temp[8];
+		_mm512_storeu_epi64(temp, range);
+
+		temp[0] = -temp[0] % temp[0];
+		temp[1] = -temp[1] % temp[1];
+		temp[2] = -temp[2] % temp[2];
+		temp[3] = -temp[3] % temp[3];
+		temp[4] = -temp[4] % temp[4];
+		temp[5] = -temp[5] % temp[5];
+		temp[6] = -temp[6] % temp[6];
+		temp[7] = -temp[7] % temp[7];
+
+		return _mm512_loadu_epi64(temp);
 	}
 }
