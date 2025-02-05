@@ -90,3 +90,59 @@ TEST_CASE("Method next_512d() works as expected")
 		REQUIRE(v < 0.1);
 	}
 }
+
+TEST_CASE("Method range_512i() works as expected")
+{
+	constexpr static evo::u64_t s_seed = 42;
+	constexpr static int s_iterations = 1 << 12;
+
+	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
+	
+	__m512i ranges = _mm512_set_epi64(
+		0x510B3B098CE23BB6,
+		0x0C30A0C0A580B8B4,
+		0x0E4C2689DC2A5887,
+		0x00000E4C2689DC2A,
+		0x00000000D47ECD52,
+		0x0000000059BDAF46,
+		0x0000000036406D8C,
+		0x000000000EEF1E41
+	);
+
+	__m512d sum = _mm512_setzero_pd();
+	__m512i mx = _mm512_setzero_si512();
+	__m512d target = _mm512_cvtepi64_pd(_mm512_srli_epi64(ranges, 1));
+	target = _mm512_mul_pd(target, _mm512_set1_pd(s_iterations));
+
+	SECTION("Without precomputed 't'")
+	{
+		for (int i = 0; i < s_iterations; i++)
+		{
+			__m512i crr = prng.range_512i(ranges);
+			sum = _mm512_add_pd(sum, _mm512_cvtepi64_pd(crr));
+			mx = _mm512_max_epi64(mx, crr);
+		}
+	}
+
+	SECTION("With precomputed 't'")
+	{
+		__m512i t = prng.compute_t(ranges);
+		for (int i = 0; i < s_iterations; i++)
+		{
+			__m512i crr = prng.range_512i(ranges, t);
+			sum = _mm512_add_pd(sum, _mm512_cvtepi64_pd(crr));
+			mx = _mm512_max_epi64(mx, crr);
+		}
+	}
+
+	std::array<evo::f64_t, 8> sums{};
+	_mm512_storeu_pd(sums.data(), sum);
+
+	std::array<evo::f64_t, 8> targets{};
+	_mm512_storeu_pd(targets.data(), target);
+
+	for (int i = 0; i < 8; i++)
+		REQUIRE_THAT(sums[i], Catch::Matchers::WithinRel(targets[i], 0.1));
+
+	REQUIRE(_cvtmask8_u32(_mm512_cmplt_epu64_mask(mx, ranges)) == 0xFF);
+}
