@@ -27,4 +27,33 @@ namespace evo
 
 		return hh;
 	}
+
+	template <typename T>
+	inline T* allocate(std::size_t count)
+	{
+		constexpr static std::size_t s_alignment = std::hardware_constructive_interference_size;
+		std::size_t rem = count % s_alignment;
+		if (rem)
+			count += s_alignment - rem;
+
+#ifdef EVO_OS_WINDOWS
+		T* ptr = static_cast<T*>(_aligned_malloc(sizeof(T) * count, s_alignment));
+#else
+		T* ptr = static_cast<T*>(std::aligned_alloc(s_alignment, sizeof(T) * count));
+#endif
+
+		assert(ptr != nullptr);
+		return ptr;
+	}
+
+	inline void deallocate(void* ptr)
+	{
+		assert(ptr != nullptr);
+
+#ifdef EVO_OS_WINDOWS
+		_aligned_free(ptr);
+#else
+		std::free(ptr);
+#endif
+	}
 }
