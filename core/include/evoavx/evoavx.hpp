@@ -1,4 +1,5 @@
 #pragma once
+#include "evoavx-impl/component.hpp"
 #include "evoavx-impl/global.hpp"
 #include "evoavx-impl/utils.hpp"
 #include "evoavx-impl/random/random.hpp"

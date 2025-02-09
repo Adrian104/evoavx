@@ -26,8 +26,10 @@
 #include <cassert>
 #include <concepts>
 #include <cstdint>
+#include <memory>
 #include <new>
 #include <type_traits>
+#include <vector>
 
 namespace evo
 {
@@ -41,4 +43,10 @@ namespace evo
 	using u16_t = std::uint16_t;
 	using u32_t = std::uint32_t;
 	using u64_t = std::uint64_t;
+}
+
+namespace evo::cc
+{
+	template <typename DerivedT, typename BaseT>
+	concept inherits_from = std::derived_from<DerivedT, BaseT> && !std::same_as<DerivedT, BaseT>;
 }
