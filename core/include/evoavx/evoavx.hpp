@@ -1,6 +1,11 @@
 #pragma once
 #include "evoavx-impl/component.hpp"
+#include "evoavx-impl/evolution.hpp"
+#include "evoavx-impl/fitness-function.hpp"
 #include "evoavx-impl/global.hpp"
+#include "evoavx-impl/operator.hpp"
+#include "evoavx-impl/state.hpp"
+#include "evoavx-impl/static-settings.hpp"
 #include "evoavx-impl/utils.hpp"
 #include "evoavx-impl/random/random.hpp"
 #include "evoavx-impl/random/splitmix64.hpp"
