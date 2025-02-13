@@ -33,9 +33,11 @@ namespace evo
 		virtual ~FusedXMBase() = default;
 	};
 
-	template <cc::static_settings S, cc::crossover CrossoverT, cc::mutation MutationT>
-	class FusedXM : public FusedXMBase<S>, public CrossoverT, public MutationT
+	template <cc::static_settings S, template <typename> typename X, template <typename> typename M>
+		requires cc::crossover<X<S>> && cc::mutation<M<S>>
+	class FusedXM : public FusedXMBase<S>, public X<S>, public M<S>
 	{
-
+	public:
+		virtual ~FusedXM() = default;
 	};
 }

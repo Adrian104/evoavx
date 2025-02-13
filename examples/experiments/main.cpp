@@ -18,6 +18,18 @@ class SimpleSelection : public evo::Selection<S>
 
 };
 
+template <evo::cc::static_settings S>
+class SimpleCrossover
+{
+
+};
+
+template <evo::cc::static_settings S>
+class SimpleMutation
+{
+
+};
+
 evo::u64_t Sphere::length() const
 {
 	return m_dim;
@@ -36,19 +48,18 @@ int main()
 {
 	evo::Evolution evolution;
 
-	assert(evolution.use_fitness_function<Sphere>() == nullptr);
-	assert(evolution.get_fitness_function<Sphere>() == nullptr);
+	assert(evolution.get<Sphere>() == nullptr);
+	assert(evolution.get<SimpleSelection>() == nullptr);
+	assert((evolution.get<SimpleCrossover, SimpleMutation>() == nullptr));
 
-	evolution.add_fitness_function<Sphere>(10);
+	evolution.set<Sphere>(10);
+	evolution.set<SimpleSelection>();
+	evolution.set<SimpleCrossover, SimpleMutation>();
 
-	assert(evolution.use_fitness_function<Sphere>() != nullptr);
-	assert(evolution.get_fitness_function<Sphere>() != nullptr);
-	assert(evolution.get_fitness_function<Sphere>()->length() == 10);
-
-	evolution.add_selection<SimpleSelection>();
-
-	assert(evolution.use_selection<SimpleSelection>() != nullptr);
-	assert(evolution.get_selection<SimpleSelection>() != nullptr);
+	assert(evolution.get<Sphere>() != nullptr);
+	assert(evolution.get<Sphere>()->length() == 10);
+	assert(evolution.get<SimpleSelection>() != nullptr);
+	assert((evolution.get<SimpleCrossover, SimpleMutation>() != nullptr));
 
 	evolution.set_crossover_probability(0.5);
 	evolution.set_population(500, 300);

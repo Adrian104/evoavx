@@ -28,48 +28,37 @@ namespace evo
 		Extremum get_extremum() const noexcept;
 
 		template <cc::inherits_from<FitnessFunction> T, typename... Args>
-		T& add_fitness_function(Args&&... args);
+		T& set(Args&&... args);
 
-		template <template <typename> typename T, typename... Args>
+		template <template <typename> typename T>
 			requires cc::inherits_from<T<S>, Selection<S>>
-		T<S>& add_selection(Args&&... args);
+		T<S>& set();
 
-		template <template <typename> typename T, typename... Args>
-			requires cc::inherits_from<T<S>, FusedXMBase<S>>
-		T<S>& add_fused_xm(Args&&... args);
+		template <template <typename> typename X, template <typename> typename M>
+			requires cc::crossover<X<S>> && cc::mutation<M<S>>
+		FusedXM<S, X, M>& set();
 
 		template <cc::inherits_from<FitnessFunction> T>
-		T* use_fitness_function();
+		T* get();
 
 		template <template <typename> typename T>
 			requires cc::inherits_from<T<S>, Selection<S>>
-		T<S>* use_selection();
+		T<S>* get();
 
-		template <template <typename> typename T>
-			requires cc::inherits_from<T<S>, FusedXMBase<S>>
-		T<S>* use_fused_xm();
+		template <template <typename> typename X, template <typename> typename M>
+			requires cc::crossover<X<S>> && cc::mutation<M<S>>
+		FusedXM<S, X, M>* get();
 
 		template <cc::inherits_from<FitnessFunction> T>
-		T* get_fitness_function();
+		const T* get() const;
 
 		template <template <typename> typename T>
 			requires cc::inherits_from<T<S>, Selection<S>>
-		T<S>* get_selection();
+		const T<S>* get() const;
 
-		template <template <typename> typename T>
-			requires cc::inherits_from<T<S>, FusedXMBase<S>>
-		T<S>* get_fused_xm();
-
-		template <cc::inherits_from<FitnessFunction> T>
-		const T* get_fitness_function() const;
-
-		template <template <typename> typename T>
-			requires cc::inherits_from<T<S>, Selection<S>>
-		const T<S>* get_selection() const;
-
-		template <template <typename> typename T>
-			requires cc::inherits_from<T<S>, FusedXMBase<S>>
-		const T<S>* get_fused_xm() const;
+		template <template <typename> typename X, template <typename> typename M>
+			requires cc::crossover<X<S>> && cc::mutation<M<S>>
+		const FusedXM<S, X, M>* get() const;
 	};
 }
 
@@ -161,82 +150,62 @@ namespace evo
 	}
 
 	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T, typename... Args>
-	inline T& Evolution<S>::add_fitness_function(Args&&... args)
+	inline T& Evolution<S>::set(Args&&... args)
 	{
 		return m_state.m_fitnessFunc.add_and_use<T>(std::forward<Args>(args)...);
 	}
 
-	template <cc::static_settings S> template <template <typename> typename T, typename... Args>
+	template <cc::static_settings S> template <template <typename> typename T>
 		requires cc::inherits_from<T<S>, Selection<S>>
-	inline T<S>& Evolution<S>::add_selection(Args&&... args)
+	inline T<S>& Evolution<S>::set()
 	{
-		return m_selection.add_and_use<T<S>>(std::forward<Args>(args)...);
+		return m_selection.add_and_use<T<S>>();
 	}
 
-	template <cc::static_settings S> template <template <typename> typename T, typename... Args>
-		requires cc::inherits_from<T<S>, FusedXMBase<S>>
-	inline T<S>& Evolution<S>::add_fused_xm(Args&&... args)
+	template <cc::static_settings S> template <template <typename> typename X, template <typename> typename M>
+		requires cc::crossover<X<S>> && cc::mutation<M<S>>
+	inline FusedXM<S, X, M>& Evolution<S>::set()
 	{
-		return m_fusedXM.add_and_use<T<S>>(std::forward<Args>(args)...);
+		return m_fusedXM.add_and_use<FusedXM<S, X, M>>();
 	}
 
 	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T>
-	inline T* Evolution<S>::use_fitness_function()
-	{
-		return m_state.m_fitnessFunc.use<T>();
-	}
-
-	template <cc::static_settings S> template <template <typename> typename T>
-		requires cc::inherits_from<T<S>, Selection<S>>
-	inline T<S>* Evolution<S>::use_selection()
-	{
-		return m_selection.use<T<S>>();
-	}
-
-	template <cc::static_settings S> template <template <typename> typename T>
-		requires cc::inherits_from<T<S>, FusedXMBase<S>>
-	inline T<S>* Evolution<S>::use_fused_xm()
-	{
-		return m_fusedXM.use<T<S>>();
-	}
-
-	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T>
-	inline T* Evolution<S>::get_fitness_function()
+	inline T* Evolution<S>::get()
 	{
 		return m_state.m_fitnessFunc.get<T>();
 	}
 
 	template <cc::static_settings S> template <template <typename> typename T>
 		requires cc::inherits_from<T<S>, Selection<S>>
-	inline T<S>* Evolution<S>::get_selection()
+	inline T<S>* Evolution<S>::get()
 	{
 		return m_selection.get<T<S>>();
 	}
 
-	template <cc::static_settings S> template <template <typename> typename T>
-		requires cc::inherits_from<T<S>, FusedXMBase<S>>
-	inline T<S>* Evolution<S>::get_fused_xm()
+	template <cc::static_settings S> template <template <typename> typename X, template <typename> typename M>
+		requires cc::crossover<X<S>> && cc::mutation<M<S>>
+	inline FusedXM<S, X, M>* Evolution<S>::get()
 	{
-		return m_fusedXM.get<T<S>>();
+		return m_fusedXM.get<FusedXM<S, X, M>>();
 	}
 
 	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T>
-	inline const T* Evolution<S>::get_fitness_function() const
+	inline const T* Evolution<S>::get() const
 	{
 		return m_state.m_fitnessFunc.get<T>();
 	}
 
 	template <cc::static_settings S> template <template <typename> typename T>
 		requires cc::inherits_from<T<S>, Selection<S>>
-	inline const T<S>* Evolution<S>::get_selection() const
+	inline const T<S>* Evolution<S>::get() const
 	{
 		return m_selection.get<T<S>>();
 	}
 
-	template <cc::static_settings S> template <template <typename> typename T>
-		requires cc::inherits_from<T<S>, FusedXMBase<S>>
-	inline const T<S>* Evolution<S>::get_fused_xm() const
+	template <cc::static_settings S> template <template <typename> typename X, template <typename> typename M>
+		requires cc::crossover<X<S>> && cc::mutation<M<S>>
+	inline const FusedXM<S, X, M>* Evolution<S>::get() const
 	{
-		return m_fusedXM.get<T<S>>();
+		return m_fusedXM.get<FusedXM<S, X, M>>();
 	}
 }
