@@ -34,7 +34,7 @@ namespace evo
 		u64_t m_selectedIndividualCount = 0;
 		u64_t m_selectedGeneCount = 0;
 
-		f64_t m_crossoverProb = 0.9;
-		f64_t m_mutationProb = 0.2;
+		f64_t m_crossoverProb = 0;
+		f64_t m_mutationProb = 0;
 	};
 }
