@@ -17,12 +17,12 @@ namespace evo
 	class State
 	{
 	public:
-		std::unique_ptr<f64_t> m_genes;
-		std::unique_ptr<f64_t> m_selected;
-		std::unique_ptr<f64_t> m_scores;
-		std::unique_ptr<f64_t> m_minDomain;
-		std::unique_ptr<f64_t> m_maxDomain;
-		std::unique_ptr<f64_t> m_diffDomain;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_genes;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_selected;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_scores;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_minDomain;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_maxDomain;
+		std::unique_ptr<f64_t, Deleter<f64_t>> m_diffDomain;
 
 		Random<typename S::prng_engine_t> m_random;
 		Component<FitnessFunction> m_fitnessFunc;

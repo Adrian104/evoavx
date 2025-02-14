@@ -31,7 +31,10 @@ namespace evo
 	template <typename T>
 	inline T* allocate(std::size_t count)
 	{
-		constexpr static std::size_t s_alignment = std::hardware_constructive_interference_size;
+		constexpr static std::size_t s_cacheLineSize = std::hardware_constructive_interference_size;
+		constexpr static std::size_t s_vectorSize = 512 / 8;
+		constexpr static std::size_t s_alignment = s_cacheLineSize > s_vectorSize ? s_cacheLineSize : s_vectorSize;
+
 		std::size_t rem = count % s_alignment;
 		if (rem)
 			count += s_alignment - rem;
@@ -56,4 +59,11 @@ namespace evo
 		std::free(ptr);
 #endif
 	}
+
+	template <typename T>
+	class Deleter
+	{
+	public:
+		void operator()(T* ptr) const { deallocate(ptr); }
+	};
 }
