@@ -86,8 +86,8 @@ namespace evo
 		if (selected >= total)
 			throw std::invalid_argument("The number of selected individuals must be smaller than the total number of individuals");
 
-		state::m_individualCount = total;
-		state::m_selectedIndividualCount = selected;
+		state::m_indivCount = total;
+		state::m_selIndivCount = selected;
 		return *this;
 	}
 
@@ -120,7 +120,7 @@ namespace evo
 	template <cc::static_settings S>
 	inline std::pair<u64_t, u64_t> Evolution<S>::get_population() const noexcept
 	{
-		return { state::m_individualCount, state::m_selectedIndividualCount };
+		return { state::m_indivCount, state::m_selIndivCount };
 	}
 
 	template <cc::static_settings S>

@@ -28,21 +28,37 @@ namespace evo
 		return hh;
 	}
 
-	template <typename T>
-	inline T* allocate(std::size_t count)
+	template <cc::vector_element T>
+	inline u64_t alignment_floor(u64_t count) noexcept
 	{
-		constexpr static std::size_t s_cacheLineSize = std::hardware_constructive_interference_size;
-		constexpr static std::size_t s_vectorSize = 512 / 8;
-		constexpr static std::size_t s_alignment = s_cacheLineSize > s_vectorSize ? s_cacheLineSize : s_vectorSize;
+		constexpr static u64_t multiples = g_vectorBytes / sizeof(T);
+		constexpr static u64_t mask = ~(multiples - 1);
 
-		std::size_t rem = count % s_alignment;
-		if (rem)
-			count += s_alignment - rem;
+		return count & mask;
+	}
+
+	template <cc::vector_element T>
+	inline u64_t alignment_ceil(u64_t count) noexcept
+	{
+		constexpr static u64_t multiples = g_vectorBytes / sizeof(T);
+		constexpr static u64_t mask = ~(multiples - 1);
+
+		const u64_t floor = count & mask;
+		const u64_t values[2]{ floor, floor + multiples };
+
+		return values[count != floor];
+	}
+
+	template <cc::vector_element T>
+	inline T* allocate(u64_t count)
+	{
+		const std::size_t bytes = count * sizeof(T);
+		assert((bytes % g_vectorBytes) == 0);
 
 #ifdef EVO_OS_WINDOWS
-		T* ptr = static_cast<T*>(_aligned_malloc(sizeof(T) * count, s_alignment));
+		T* ptr = static_cast<T*>(_aligned_malloc(bytes, g_vectorBytes));
 #else
-		T* ptr = static_cast<T*>(std::aligned_alloc(s_alignment, sizeof(T) * count));
+		T* ptr = static_cast<T*>(std::aligned_alloc(g_vectorBytes, bytes));
 #endif
 
 		assert(ptr != nullptr);
@@ -60,10 +76,13 @@ namespace evo
 #endif
 	}
 
-	template <typename T>
 	class Deleter
 	{
 	public:
+		template <typename T>
 		void operator()(T* ptr) const { deallocate(ptr); }
 	};
+
+	template <typename T>
+	using unique = std::unique_ptr<T, Deleter>;
 }

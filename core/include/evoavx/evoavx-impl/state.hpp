@@ -17,22 +17,22 @@ namespace evo
 	class State
 	{
 	public:
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_genes;
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_selected;
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_scores;
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_minDomain;
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_maxDomain;
-		std::unique_ptr<f64_t, Deleter<f64_t>> m_diffDomain;
-
 		Random<typename S::prng_engine_t> m_random;
 		Component<FitnessFunction> m_fitnessFunc;
 		std::vector<std::pair<f64_t, f64_t>> m_genome;
 		Extremum m_extremum = Extremum::MINIMUM;
 
-		u64_t m_individualCount = 0;
+		unique<f64_t[]> m_genes;
+		unique<f64_t[]> m_selected;
+		unique<f64_t[]> m_scores;
+		unique<f64_t[]> m_minDomain;
+		unique<f64_t[]> m_maxDomain;
+		unique<f64_t[]> m_diffDomain;
+
+		u64_t m_indivCount = 0;
 		u64_t m_geneCount = 0;
-		u64_t m_selectedIndividualCount = 0;
-		u64_t m_selectedGeneCount = 0;
+		u64_t m_selIndivCount = 0;
+		u64_t m_selGeneCount = 0;
 
 		f64_t m_crossoverProb = 0;
 		f64_t m_mutationProb = 0;

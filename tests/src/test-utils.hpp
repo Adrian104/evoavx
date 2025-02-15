@@ -56,3 +56,66 @@ TEST_CASE("Wide multiplication works as expected")
 	REQUIRE(_cvtmask8_u32(lowEqual) == 0xFF);
 	REQUIRE(_cvtmask8_u32(highEqual) == 0xFF);
 }
+
+TEST_CASE("Functions alignment_floor() and alignment_ceil() work as expected")
+{
+	SECTION("With u8_t")
+	{
+		REQUIRE(evo::alignment_floor<evo::u8_t>(0) == 0);
+		REQUIRE(evo::alignment_ceil<evo::u8_t>(0) == 0);
+
+		for (evo::u64_t i = 1; i < 64; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::u8_t>(i) == 0);
+			REQUIRE(evo::alignment_ceil<evo::u8_t>(i) == 64);
+		}
+
+		REQUIRE(evo::alignment_floor<evo::u8_t>(64) == 64);
+		REQUIRE(evo::alignment_ceil<evo::u8_t>(64) == 64);
+
+		for (evo::u64_t i = 65; i < 128; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::u8_t>(i) == 64);
+			REQUIRE(evo::alignment_ceil<evo::u8_t>(i) == 128);
+		}
+
+		REQUIRE(evo::alignment_floor<evo::u8_t>(128) == 128);
+		REQUIRE(evo::alignment_ceil<evo::u8_t>(128) == 128);
+
+		for (evo::u64_t i = 129; i < 192; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::u8_t>(i) == 128);
+			REQUIRE(evo::alignment_ceil<evo::u8_t>(i) == 192);
+		}
+	}
+
+	SECTION("With f32_t")
+	{
+		REQUIRE(evo::alignment_floor<evo::f32_t>(0) == 0);
+		REQUIRE(evo::alignment_ceil<evo::f32_t>(0) == 0);
+
+		for (evo::u64_t i = 1; i < 16; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::f32_t>(i) == 0);
+			REQUIRE(evo::alignment_ceil<evo::f32_t>(i) == 16);
+		}
+
+		REQUIRE(evo::alignment_floor<evo::f32_t>(16) == 16);
+		REQUIRE(evo::alignment_ceil<evo::f32_t>(16) == 16);
+
+		for (evo::u64_t i = 17; i < 32; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::f32_t>(i) == 16);
+			REQUIRE(evo::alignment_ceil<evo::f32_t>(i) == 32);
+		}
+
+		REQUIRE(evo::alignment_floor<evo::f32_t>(32) == 32);
+		REQUIRE(evo::alignment_ceil<evo::f32_t>(32) == 32);
+
+		for (evo::u64_t i = 33; i < 48; i++)
+		{
+			REQUIRE(evo::alignment_floor<evo::f32_t>(i) == 32);
+			REQUIRE(evo::alignment_ceil<evo::f32_t>(i) == 48);
+		}
+	}
+}
