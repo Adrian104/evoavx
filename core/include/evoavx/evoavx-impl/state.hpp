@@ -1,12 +1,14 @@
 #pragma once
 #include "global.hpp"
 #include "component.hpp"
-#include "fitness-function.hpp"
 #include "static-settings.hpp"
 #include "random/random.hpp"
 
 namespace evo
 {
+	template <cc::static_settings S>
+	class EvaluatorBase;
+
 	enum class Extremum
 	{
 		MINIMUM,
@@ -18,7 +20,7 @@ namespace evo
 	{
 	public:
 		Random<typename S::prng_engine_t> m_random;
-		Component<FitnessFunction> m_fitnessFunc;
+		Component<EvaluatorBase<S>> m_evaluator;
 		std::vector<std::pair<f64_t, f64_t>> m_genome;
 		Extremum m_extremum = Extremum::MINIMUM;
 

@@ -2,15 +2,15 @@
 #include <cassert>
 #include <cmath>
 
-class Sphere : public evo::FitnessFunction
+class Sphere
 {
 	evo::u64_t m_dim;
 
 public:
 	Sphere(evo::u64_t dim) : m_dim(dim) {}
 
-	evo::u64_t length() const override;
-	evo::f64_t evaluate(const evo::f64_t* genes, evo::u64_t threadId) override;
+	evo::u64_t length() const;
+	evo::f64_t evaluate(const evo::f64_t* genes, evo::u64_t threadId);
 };
 
 template <evo::cc::static_settings S>
@@ -95,6 +95,9 @@ int main()
 	assert(evolution.get_population().second == 401);
 
 	evolution.set_fitness_function<Sphere>(10);
+	assert(evolution.get_fitness_function<Sphere>() != nullptr);
+	assert(evolution.get_fitness_function<Sphere>()->length() == 10);
+
 	evolution.set_triplet<TripletA>();
 	evolution.set_triplet<TripletB>();
 
@@ -115,5 +118,8 @@ int main()
 	assert(evolution.get_mutation<TripletC>() == nullptr);
 
 	evolution.run();
+	evolution.remove_fitness_function<Sphere>();
+
+	assert(evolution.get_fitness_function<Sphere>() == nullptr);
 	return 0;
 }

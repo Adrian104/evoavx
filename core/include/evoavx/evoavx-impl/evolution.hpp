@@ -2,6 +2,7 @@
 #include "global.hpp"
 #include "algorithm.hpp"
 #include "component.hpp"
+#include "evaluator.hpp"
 #include "state.hpp"
 #include "triplet.hpp"
 
@@ -33,14 +34,14 @@ namespace evo
 		f64_t get_mutation_probability() const noexcept;
 		Extremum get_extremum() const noexcept;
 
-		template <cc::inherits_from<FitnessFunction> T, typename... Args>
-		T& set_fitness_function(Args&&... args);
+		template <cc::fitness_function F, typename... Args>
+		F& set_fitness_function(Args&&... args);
 
-		template <cc::inherits_from<FitnessFunction> T>
+		template <cc::fitness_function F>
 		void remove_fitness_function();
 
-		template <cc::inherits_from<FitnessFunction> T>
-		T* get_fitness_function();
+		template <cc::fitness_function F>
+		F* get_fitness_function();
 
 		template <cc::triplet<S> T>
 		void set_triplet();
@@ -67,7 +68,7 @@ namespace evo
 		if (m_algorithm.get_used() == nullptr)
 			throw std::runtime_error("Triplet is not set");
 
-		if (state::m_fitnessFunc.get_used() == nullptr)
+		if (state::m_evaluator.get_used() == nullptr)
 			throw std::runtime_error("Fitness function is not set");
 
 		if (state::m_genome.empty())
@@ -76,7 +77,7 @@ namespace evo
 		if (state::m_indivCount == 0 || state::m_selIndivCount == 0)
 			throw std::runtime_error("Population size is not set");
 
-		if (state::m_fitnessFunc.get_used()->length() != state::m_genome.size())
+		if (state::m_evaluator.get_used()->get_length() != state::m_genome.size())
 			throw std::runtime_error("Genome length does not match the number of arguments required by the fitness function");
 	}
 
@@ -138,6 +139,11 @@ namespace evo
 	{
 		verify();
 		init();
+
+		while (true)
+		{
+			state::m_evaluator.get_used()->evaluate_population(*this);
+		}
 	}
 
 	template <cc::static_settings S>
@@ -225,22 +231,22 @@ namespace evo
 		return state::m_extremum;
 	}
 
-	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T, typename... Args>
-	inline T& Evolution<S>::set_fitness_function(Args&&... args)
+	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>
+	inline F& Evolution<S>::set_fitness_function(Args&&... args)
 	{
-		return state::m_fitnessFunc.add_and_use<T>(std::forward<Args>(args)...);
+		return static_cast<F&>(state::m_evaluator.add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...));
 	}
 
-	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T>
+	template <cc::static_settings S> template <cc::fitness_function F>
 	inline void Evolution<S>::remove_fitness_function()
 	{
-		state::m_fitnessFunc.remove<T>();
+		state::m_evaluator.remove<Evaluator<S, F>>();
 	}
 
-	template <cc::static_settings S> template <cc::inherits_from<FitnessFunction> T>
-	inline T* Evolution<S>::get_fitness_function()
+	template <cc::static_settings S> template <cc::fitness_function F>
+	inline F* Evolution<S>::get_fitness_function()
 	{
-		return state::m_fitnessFunc.get<T>();
+		return static_cast<F*>(state::m_evaluator.get<Evaluator<S, F>>());
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
