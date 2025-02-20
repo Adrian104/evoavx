@@ -22,7 +22,7 @@ namespace evo
 		virtual ~EvaluatorBase() = default;
 		virtual u64_t get_length() const = 0;
 		virtual f64_t evaluate_individual(const f64_t* genes, u64_t threadId) = 0;
-		virtual void evaluate_population(State<S>& state) = 0;
+		virtual f64_t evaluate_population(State<S>& state) = 0;
 	};
 
 	template <cc::static_settings S, cc::fitness_function F>
@@ -34,7 +34,7 @@ namespace evo
 
 		u64_t get_length() const override;
 		f64_t evaluate_individual(const f64_t* genes, u64_t threadId) override;
-		void evaluate_population(State<S>& state) override;
+		f64_t evaluate_population(State<S>& state) override;
 	};
 }
 
@@ -53,10 +53,18 @@ namespace evo
 	}
 
 	template <cc::static_settings S, cc::fitness_function F>
-	inline void Evaluator<S, F>::evaluate_population(State<S>& state)
+	inline f64_t Evaluator<S, F>::evaluate_population(State<S>& state)
 	{
-		u64_t offset = state.m_genome.size();
+		u64_t genomeSize = state.m_genome.size();
+		f64_t totalScore = 0;
+
 		for (u64_t i = 0; i < state.m_indivCount; i++)
-			state.m_scores[i] = F::evaluate(state.m_genes.get() + i * offset, 0);
+		{
+			f64_t score = F::evaluate(state.m_genes.get() + i * genomeSize, 0);
+			state.m_scores[i] = score;
+			totalScore += score;
+		}
+
+		return totalScore / state.m_indivCount;
 	}
 }

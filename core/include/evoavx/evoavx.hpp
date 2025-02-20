@@ -6,6 +6,7 @@
 #include "evoavx-impl/global.hpp"
 #include "evoavx-impl/state.hpp"
 #include "evoavx-impl/static-settings.hpp"
+#include "evoavx-impl/statistics.hpp"
 #include "evoavx-impl/triplet.hpp"
 #include "evoavx-impl/utils.hpp"
 #include "evoavx-impl/random/random.hpp"

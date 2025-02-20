@@ -27,8 +27,11 @@
 #include <array>
 #include <bit>
 #include <cassert>
+#include <chrono>
+#include <cmath>
 #include <concepts>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <new>
 #include <random>
@@ -48,6 +51,7 @@ namespace evo
 	using u16_t = std::uint16_t;
 	using u32_t = std::uint32_t;
 	using u64_t = std::uint64_t;
+	using clk_t = std::chrono::high_resolution_clock;
 
 	constexpr inline std::size_t g_vectorBits = 512;
 	constexpr inline std::size_t g_vectorBytes = g_vectorBits / 8;

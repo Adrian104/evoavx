@@ -4,6 +4,7 @@
 #include "component.hpp"
 #include "evaluator.hpp"
 #include "state.hpp"
+#include "statistics.hpp"
 #include "triplet.hpp"
 
 namespace evo
@@ -13,6 +14,8 @@ namespace evo
 	{
 	private:
 		using state = State<S>;
+
+		Statistics<S> m_statistics;
 		Component<AlgorithmBase<S>> m_algorithm;
 
 		void verify();
@@ -137,13 +140,13 @@ namespace evo
 	template <cc::static_settings S>
 	inline void Evolution<S>::run()
 	{
+		m_statistics.start();
+
 		verify();
 		init();
 
-		while (true)
-		{
-			state::m_evaluator.get_used()->evaluate_population(*this);
-		}
+		f64_t meanEstimate = state::m_evaluator.get_used()->evaluate_population(*this);
+		m_statistics.update(*this, meanEstimate);
 	}
 
 	template <cc::static_settings S>
