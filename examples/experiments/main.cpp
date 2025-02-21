@@ -85,7 +85,7 @@ int main()
 	for (int i = 1; i <= 10; i++)
 		evolution.add_gene(0, std::pow(10, i / 2.0));
 
-	evolution.set_extremum(evo::Extremum::MAXIMUM);
+	evolution.set_extremum(evo::Extremum::MINIMUM);
 	evolution.set_population(799, 401);
 	evolution.set_crossover_probability(0.8);
 	evolution.set_mutation_probability(0.15);
@@ -93,6 +93,7 @@ int main()
 	assert(evolution.get_genome().size() == 10);
 	assert(evolution.get_population().first == 799);
 	assert(evolution.get_population().second == 401);
+	assert(evolution.get_extremum() == evo::Extremum::MINIMUM);
 
 	evolution.set_fitness_function<Sphere>(10);
 	assert(evolution.get_fitness_function<Sphere>() != nullptr);
@@ -119,7 +120,23 @@ int main()
 
 	evolution.run();
 	evolution.remove_fitness_function<Sphere>();
+	evolution.clear_genome();
+	evolution.remove_triplet<TripletB>();
 
 	assert(evolution.get_fitness_function<Sphere>() == nullptr);
+	assert(evolution.get_genome().empty());
+
+	assert(evolution.get_selection<TripletA>() != nullptr);
+	assert(evolution.get_crossover<TripletA>() != nullptr);
+	assert(evolution.get_mutation<TripletA>() != nullptr);
+
+	assert(evolution.get_selection<TripletB>() == nullptr);
+	assert(evolution.get_crossover<TripletB>() == nullptr);
+	assert(evolution.get_mutation<TripletB>() == nullptr);
+
+	assert(evolution.get_selection<TripletC>() == nullptr);
+	assert(evolution.get_crossover<TripletC>() == nullptr);
+	assert(evolution.get_mutation<TripletC>() == nullptr);
+
 	return 0;
 }
