@@ -135,7 +135,7 @@ namespace evo
 		u64_t temp[8];
 		_mm512_storeu_epi64(temp, range);
 
-#ifdef _MSC_VER
+#ifdef EVO_COMPILER_MSVC
 #pragma warning(push)
 #pragma warning(disable: 4146)
 #endif
@@ -149,7 +149,7 @@ namespace evo
 		temp[6] = -temp[6] % temp[6];
 		temp[7] = -temp[7] % temp[7];
 
-#ifdef _MSC_VER
+#ifdef EVO_COMPILER_MSVC
 #pragma warning(pop)
 #endif
 

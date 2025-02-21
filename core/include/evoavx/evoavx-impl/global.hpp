@@ -12,6 +12,18 @@
 #error "Invalid OS configuration"
 #endif
 
+#if !defined(EVO_COMPILER_MSVC) && defined(_MSC_VER)
+#define EVO_COMPILER_MSVC
+#endif
+
+#if !defined(EVO_COMPILER_CLANG) && defined(__clang__) && !defined(_MSC_VER)
+#define EVO_COMPILER_CLANG
+#endif
+
+#if !defined(EVO_COMPILER_GNU) && defined(__GNUG__) && !defined(__clang__)
+#define EVO_COMPILER_GNU
+#endif
+
 #ifdef EVO_OS_WINDOWS
 #define NOMINMAX
 #include <immintrin.h>
