@@ -135,6 +135,11 @@ namespace evo
 		u64_t temp[8];
 		_mm512_storeu_epi64(temp, range);
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4146)
+#endif
+
 		temp[0] = -temp[0] % temp[0];
 		temp[1] = -temp[1] % temp[1];
 		temp[2] = -temp[2] % temp[2];
@@ -143,6 +148,10 @@ namespace evo
 		temp[5] = -temp[5] % temp[5];
 		temp[6] = -temp[6] % temp[6];
 		temp[7] = -temp[7] % temp[7];
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 		return _mm512_loadu_epi64(temp);
 	}

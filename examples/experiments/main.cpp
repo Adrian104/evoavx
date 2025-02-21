@@ -64,7 +64,7 @@ evo::u64_t Sphere::length() const
 	return m_dim;
 }
 
-evo::f64_t Sphere::evaluate(const evo::f64_t* genes, evo::u64_t threadId)
+evo::f64_t Sphere::evaluate(const evo::f64_t* genes, [[maybe_unused]] evo::u64_t threadId)
 {
 	evo::f64_t sum = 0;
 	for (evo::u64_t i = 0; i < m_dim; i++)

@@ -177,51 +177,51 @@ namespace evo
 	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>
 	inline F& Evolution<S>::set_fitness_function(Args&&... args)
 	{
-		return static_cast<F&>(m_state.m_evaluator.add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...));
+		return static_cast<F&>(m_state.m_evaluator.template add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...));
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F>
 	inline void Evolution<S>::remove_fitness_function()
 	{
-		m_state.m_evaluator.remove<Evaluator<S, F>>();
+		m_state.m_evaluator.template remove<Evaluator<S, F>>();
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F>
 	inline F* Evolution<S>::get_fitness_function()
 	{
-		return static_cast<F*>(m_state.m_evaluator.get<Evaluator<S, F>>());
+		return static_cast<F*>(m_state.m_evaluator.template get<Evaluator<S, F>>());
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
 	inline void Evolution<S>::set_triplet()
 	{
-		m_algorithm.add_and_use<Algorithm<S, T>>();
+		m_algorithm.template add_and_use<Algorithm<S, T>>();
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
 	inline void Evolution<S>::remove_triplet()
 	{
-		m_algorithm.remove<Algorithm<S, T>>();
+		m_algorithm.template remove<Algorithm<S, T>>();
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
 	inline auto Evolution<S>::get_selection() -> typename T::template selection_t<S>*
 	{
-		Algorithm<S, T>* const ptr = m_algorithm.get<Algorithm<S, T>>();
+		Algorithm<S, T>* const ptr = m_algorithm.template get<Algorithm<S, T>>();
 		return ptr != nullptr ? &ptr->m_selection : nullptr;
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
 	inline auto Evolution<S>::get_crossover() -> typename T::template crossover_t<S>*
 	{
-		Algorithm<S, T>* const ptr = m_algorithm.get<Algorithm<S, T>>();
+		Algorithm<S, T>* const ptr = m_algorithm.template get<Algorithm<S, T>>();
 		return ptr != nullptr ? &ptr->m_crossover : nullptr;
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
 	inline auto Evolution<S>::get_mutation() -> typename T::template mutation_t<S>*
 	{
-		Algorithm<S, T>* const ptr = m_algorithm.get<Algorithm<S, T>>();
+		Algorithm<S, T>* const ptr = m_algorithm.template get<Algorithm<S, T>>();
 		return ptr != nullptr ? &ptr->m_mutation : nullptr;
 	}
 }
