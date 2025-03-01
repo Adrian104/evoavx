@@ -1,5 +1,6 @@
 #pragma once
 #include "global.hpp"
+#include "island-dec.hpp"
 #include "static-settings.hpp"
 #include "triplet.hpp"
 

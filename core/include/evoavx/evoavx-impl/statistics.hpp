@@ -1,5 +1,6 @@
 #pragma once
 #include "global.hpp"
+#include "island-dec.hpp"
 #include "static-settings.hpp"
 #include "utils.hpp"
 
@@ -19,7 +20,7 @@ namespace evo
 		u64_t m_stagnation = 0;
 
 		void start();
-		//void update(State<S>& state, double meanEstimate);
+		void update(Island<S>& island, double meanEstimate);
 	};
 }
 
@@ -32,12 +33,12 @@ namespace evo
 		m_stagnation = 0;
 	}
 
-	/*template <cc::static_settings S>
-	inline void Statistics<S>::update(State<S>& state, double meanEstimate)
+	template <cc::static_settings S>
+	inline void Statistics<S>::update(Island<S>& island, double meanEstimate)
 	{
-		u64_t count = alignment_floor<f64_t>(state.m_indivCount);
-		u64_t extra = state.m_indivCount - count;
-		f64_t* scores = state.m_scores.get();
+		u64_t count = alignment_floor<f64_t>(island.m_indivCount);
+		u64_t extra = island.m_indivCount - count;
+		f64_t* scores = island.m_scores.get();
 		f64_t* last = scores + count;
 
 		__m512d mean = _mm512_set1_pd(meanEstimate);
@@ -92,8 +93,8 @@ namespace evo
 		++m_generation;
 		++m_stagnation;
 
-		if ((state.m_extremum == Extremum::MINIMUM && hmin < m_minimum) ||
-			(state.m_extremum == Extremum::MAXIMUM && hmax > m_maximum))
+		if ((island.m_extremum == Extremum::MINIMUM && hmin < m_minimum) ||
+			(island.m_extremum == Extremum::MAXIMUM && hmax > m_maximum))
 			m_stagnation = 0;
 
 		m_minimum = hmin;
@@ -115,9 +116,9 @@ namespace evo
 
 		f64_t hsum1 = _mm512_reduce_add_pd(sum1);
 		f64_t hsum2 = _mm512_reduce_add_pd(sum2);
-		f64_t k = static_cast<f64_t>(state.m_indivCount);
+		f64_t k = static_cast<f64_t>(island.m_indivCount);
 
 		m_mean = meanEstimate + hsum1 / k;
 		m_stdev = std::sqrt(hsum2 / k - (hsum1 * hsum1) / (k * k));
-	}*/
+	}
 }

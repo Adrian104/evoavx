@@ -1,5 +1,6 @@
 #pragma once
 #include "global.hpp"
+#include "island-dec.hpp"
 #include "static-settings.hpp"
 
 namespace evo::cc
@@ -21,7 +22,7 @@ namespace evo
 		virtual ~EvaluatorBase() = default;
 		virtual u64_t get_length() const = 0;
 		virtual f64_t evaluate_individual(const f64_t* genes) = 0;
-		//virtual f64_t evaluate_population(State<S>& state) = 0;
+		virtual f64_t evaluate_population(Island<S>& island) = 0;
 	};
 
 	template <cc::static_settings S, cc::fitness_function F>
@@ -33,7 +34,7 @@ namespace evo
 
 		u64_t get_length() const override;
 		f64_t evaluate_individual(const f64_t* genes) override;
-		//f64_t evaluate_population(State<S>& state) override;
+		f64_t evaluate_population(Island<S>& island) override;
 	};
 }
 
@@ -51,19 +52,19 @@ namespace evo
 		return F::evaluate(genes);
 	}
 
-	/*template <cc::static_settings S, cc::fitness_function F>
-	inline f64_t Evaluator<S, F>::evaluate_population(State<S>& state)
+	template <cc::static_settings S, cc::fitness_function F>
+	inline f64_t Evaluator<S, F>::evaluate_population(Island<S>& island)
 	{
-		u64_t genomeSize = state.m_genome.size();
+		u64_t step = island.m_realGenomeLength;
 		f64_t totalScore = 0;
 
-		for (u64_t i = 0; i < state.m_indivCount; i++)
+		for (u64_t i = 0; i < island.m_indivCount; i++)
 		{
-			f64_t score = F::evaluate(state.m_genes.get() + i * genomeSize);
-			state.m_scores[i] = score;
+			f64_t score = F::evaluate(island.m_genes.get() + i * step);
+			island.m_scores[i] = score;
 			totalScore += score;
 		}
 
-		return totalScore / state.m_indivCount;
-	}*/
+		return totalScore / island.m_indivCount;
+	}
 }

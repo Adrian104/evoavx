@@ -3,6 +3,8 @@
 #include "evoavx-impl/component.hpp"
 #include "evoavx-impl/evaluator.hpp"
 #include "evoavx-impl/global.hpp"
+#include "evoavx-impl/island-dec.hpp"
+#include "evoavx-impl/island-def.hpp"
 #include "evoavx-impl/static-settings.hpp"
 #include "evoavx-impl/statistics.hpp"
 #include "evoavx-impl/triplet.hpp"
