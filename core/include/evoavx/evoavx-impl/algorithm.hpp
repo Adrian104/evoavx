@@ -1,6 +1,6 @@
 #pragma once
 #include "global.hpp"
-#include "state.hpp"
+#include "static-settings.hpp"
 #include "triplet.hpp"
 
 namespace evo

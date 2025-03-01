@@ -1,6 +1,5 @@
 #pragma once
 #include "global.hpp"
-#include "state.hpp"
 #include "static-settings.hpp"
 #include "utils.hpp"
 
@@ -18,10 +17,9 @@ namespace evo
 		u64_t m_maximumPos = 0;
 		u64_t m_generation = 0;
 		u64_t m_stagnation = 0;
-		clk_t::time_point m_startTime{};
 
 		void start();
-		void update(State<S>& state, double meanEstimate);
+		//void update(State<S>& state, double meanEstimate);
 	};
 }
 
@@ -32,10 +30,9 @@ namespace evo
 	{
 		m_generation = 0;
 		m_stagnation = 0;
-		m_startTime = clk_t::now();
 	}
 
-	template <cc::static_settings S>
+	/*template <cc::static_settings S>
 	inline void Statistics<S>::update(State<S>& state, double meanEstimate)
 	{
 		u64_t count = alignment_floor<f64_t>(state.m_indivCount);
@@ -122,5 +119,5 @@ namespace evo
 
 		m_mean = meanEstimate + hsum1 / k;
 		m_stdev = std::sqrt(hsum2 / k - (hsum1 * hsum1) / (k * k));
-	}
+	}*/
 }

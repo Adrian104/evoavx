@@ -1,5 +1,6 @@
 #pragma once
 #include "global.hpp"
+#include "static-settings.hpp"
 
 namespace evo::cc
 {

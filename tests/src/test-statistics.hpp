@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include <evoavx/evoavx.hpp>
 
+/*
 TEST_CASE("Statistics are calculated with good accuracy")
 {
 	evo::State<evo::DefaultStaticSettings> state;
@@ -108,3 +109,4 @@ TEST_CASE("Statistics are calculated with good accuracy")
 		REQUIRE_THAT(stats.m_maximum, Catch::Matchers::WithinRel(std::numbers::e * 1e6, 0.01));
 	}
 }
+*/
