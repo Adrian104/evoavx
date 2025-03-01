@@ -53,7 +53,7 @@ TEST_CASE("Method next_512d() works as expected")
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
+	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64> prng(s_seed);
 
 	__m512d sum = _mm512_setzero_pd();
 	__m512d max = _mm512_set1_pd(-10.0);
@@ -91,12 +91,12 @@ TEST_CASE("Method next_512d() works as expected")
 	}
 }
 
-TEST_CASE("Method range_512i() works as expected")
+TEST_CASE("Method range_512i() (64-bit) works as expected")
 {
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
+	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64> prng(s_seed);
 	
 	__m512i ranges = _mm512_set_epi64(
 		0xFFC8BAF7D4884C49,
@@ -147,12 +147,12 @@ TEST_CASE("Method range_512i() works as expected")
 	REQUIRE(_cvtmask8_u32(_mm512_cmplt_epu64_mask(mx, ranges)) == 0xFF);
 }
 
-TEST_CASE("Method range_512i_52() works as expected")
+TEST_CASE("Method range_512i() (52-bit) works as expected")
 {
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>> prng(s_seed);
+	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52> prng(s_seed);
 
 	__m512i ranges = _mm512_set_epi64(
 		0x000FFC8BAF7D4884,
@@ -174,7 +174,7 @@ TEST_CASE("Method range_512i_52() works as expected")
 	{
 		for (int i = 0; i < s_iterations; i++)
 		{
-			__m512i crr = prng.range_512i_52(ranges);
+			__m512i crr = prng.range_512i(ranges);
 			sum = _mm512_add_pd(sum, _mm512_cvtepu64_pd(crr));
 			mx = _mm512_max_epu64(mx, crr);
 		}
@@ -182,10 +182,10 @@ TEST_CASE("Method range_512i_52() works as expected")
 
 	SECTION("With precomputed 't'")
 	{
-		__m512i t = prng.compute_t_52(ranges);
+		__m512i t = prng.compute_t(ranges);
 		for (int i = 0; i < s_iterations; i++)
 		{
-			__m512i crr = prng.range_512i_52(ranges, t);
+			__m512i crr = prng.range_512i(ranges, t);
 			sum = _mm512_add_pd(sum, _mm512_cvtepu64_pd(crr));
 			mx = _mm512_max_epu64(mx, crr);
 		}

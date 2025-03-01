@@ -26,7 +26,7 @@ namespace evo
 	class Island
 	{
 	public:
-		Random<typename S::prng_engine_t> m_random;
+		Random<typename S::prng_engine_t, S::range_alg_v> m_random;
 		Component<AlgorithmBase<S>> m_algorithm;
 		Component<EvaluatorBase<S>> m_evaluator;
 		Extremum m_extremum = Extremum::MINIMUM;
