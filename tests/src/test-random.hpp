@@ -53,7 +53,8 @@ TEST_CASE("Method next_512d() works as expected")
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64> prng(s_seed);
+	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64>;
+	evo::Random<config> prng(s_seed);
 
 	__m512d sum = _mm512_setzero_pd();
 	__m512d max = _mm512_set1_pd(-10.0);
@@ -96,7 +97,8 @@ TEST_CASE("Method range_512i() (64-bit) works as expected")
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64> prng(s_seed);
+	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64>;
+	evo::Random<config> prng(s_seed);
 	
 	__m512i ranges = _mm512_set_epi64(
 		0xFFC8BAF7D4884C49,
@@ -152,7 +154,8 @@ TEST_CASE("Method range_512i() (52-bit) works as expected")
 	constexpr static evo::u64_t s_seed = 42;
 	constexpr static int s_iterations = 1 << 12;
 
-	evo::Random<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52> prng(s_seed);
+	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52>;
+	evo::Random<config> prng(s_seed);
 
 	__m512i ranges = _mm512_set_epi64(
 		0x000FFC8BAF7D4884,

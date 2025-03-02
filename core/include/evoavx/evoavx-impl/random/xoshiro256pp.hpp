@@ -1,5 +1,5 @@
 #pragma once
-#include "random.hpp"
+#include "../global.hpp"
 
 namespace evo
 {
