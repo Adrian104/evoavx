@@ -78,7 +78,9 @@ namespace evo
 	enum class RangeAlg
 	{
 		LEMIRE_52,
-		LEMIRE_64
+		LEMIRE_64,
+		LEMIRE_52_UNBIASED,
+		LEMIRE_64_UNBIASED
 	};
 }
 
