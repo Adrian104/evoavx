@@ -68,6 +68,18 @@ namespace evo
 	constexpr inline std::size_t g_vectorBits = 512;
 	constexpr inline std::size_t g_vectorBytes = g_vectorBits / 8;
 	constexpr inline std::size_t g_vectorGenes = g_vectorBytes / sizeof(f64_t);
+
+	enum class Extremum
+	{
+		MINIMUM,
+		MAXIMUM
+	};
+
+	enum class RangeAlg
+	{
+		LEMIRE_52,
+		LEMIRE_64
+	};
 }
 
 namespace evo::cc
@@ -77,4 +89,158 @@ namespace evo::cc
 
 	template <typename T>
 	concept vector_element = (std::integral<T> || std::floating_point<T>) && std::has_single_bit(sizeof(T)) && (sizeof(T) < g_vectorBytes);
+
+	template <typename EngineT>
+	concept basic_prng_engine = std::is_nothrow_constructible_v<EngineT, u64_t>
+		&& std::semiregular<EngineT> && requires(EngineT engine, u64_t seed)
+	{
+		{ engine.init(seed) } noexcept;
+		{ engine.step() } noexcept;
+		{ engine.next() } noexcept -> std::same_as<u64_t>;
+	};
+
+	template <typename EngineT>
+	concept wide_prng_engine = std::is_nothrow_constructible_v<EngineT, u64_t>
+		&& std::semiregular<EngineT> && requires(EngineT engine, u64_t seed)
+	{
+		{ engine.init(seed) } noexcept;
+		{ engine.step() } noexcept;
+		{ engine.jump() } noexcept;
+		{ engine.next_512i() } noexcept -> std::same_as<__m512i>;
+	};
+
+	template <typename T>
+	concept fitness_function = requires(const T cinstance, T instance, const f64_t* genes)
+	{
+		{ cinstance.length() } -> std::same_as<u64_t>;
+		{ instance.evaluate(genes) } -> std::same_as<f64_t>;
+	};
+
+	template <typename SelectionT>
+	concept selection = requires
+	{
+		1;
+	};
+
+	template <typename CrossoverT>
+	concept crossover = requires
+	{
+		1;
+	};
+
+	template <typename MutationT>
+	concept mutation = requires
+	{
+		1;
+	};
+
+	template <typename S>
+	concept static_settings = requires
+	{
+		requires cc::wide_prng_engine<typename S::prng_engine_t>;
+		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
+	};
+
+	template <typename TripletT, typename S>
+	concept triplet = requires
+	{
+		requires static_settings<S>;
+		requires selection<typename TripletT::template selection_t<S>>;
+		requires crossover<typename TripletT::template crossover_t<S>>;
+		requires mutation<typename TripletT::template mutation_t<S>>;
+	};
+}
+
+namespace evo
+{
+	inline __m512i mulhi_512i64(__m512i a, __m512i b) noexcept
+	{
+		__m512i h0 = _mm512_srli_epi64(a, 32);
+		__m512i h1 = _mm512_srli_epi64(b, 32);
+
+		__m512i ll = _mm512_mul_epu32(a, b);
+		__m512i lh = _mm512_mul_epu32(a, h1);
+		__m512i hl = _mm512_mul_epu32(h0, b);
+		__m512i hh = _mm512_mul_epu32(h0, h1);
+
+		__m512i llh = _mm512_srli_epi64(ll, 32);
+		__m512i hll = _mm512_and_epi64(hl, _mm512_set1_epi64(0xFFFFFFFF));
+
+		lh = _mm512_add_epi64(lh, llh);
+		lh = _mm512_add_epi64(lh, hll);
+
+		__m512i hlh = _mm512_srli_epi64(hl, 32);
+		__m512i lhh = _mm512_srli_epi64(lh, 32);
+
+		hh = _mm512_add_epi64(hh, hlh);
+		hh = _mm512_add_epi64(hh, lhh);
+
+		return hh;
+	}
+
+	template <cc::vector_element T>
+	inline u64_t alignment_floor(u64_t count) noexcept
+	{
+		constexpr static u64_t multiples = g_vectorBytes / sizeof(T);
+		constexpr static u64_t mask = ~(multiples - 1);
+
+		return count & mask;
+	}
+
+	template <cc::vector_element T>
+	inline u64_t alignment_ceil(u64_t count) noexcept
+	{
+		constexpr static u64_t multiples = g_vectorBytes / sizeof(T);
+		constexpr static u64_t mask = ~(multiples - 1);
+
+		const u64_t floor = count & mask;
+		const u64_t values[2]{ floor, floor + multiples };
+
+		return values[count != floor];
+	}
+
+	template <cc::vector_element T>
+	inline T* allocate(u64_t count)
+	{
+		const std::size_t bytes = count * sizeof(T);
+		assert((bytes % g_vectorBytes) == 0);
+
+#ifdef EVO_OS_WINDOWS
+		T* ptr = static_cast<T*>(_aligned_malloc(bytes, g_vectorBytes));
+#else
+		T* ptr = static_cast<T*>(std::aligned_alloc(g_vectorBytes, bytes));
+#endif
+
+		assert(ptr != nullptr);
+		return ptr;
+	}
+
+	inline void deallocate(void* ptr)
+	{
+		assert(ptr != nullptr);
+
+#ifdef EVO_OS_WINDOWS
+		_aligned_free(ptr);
+#else
+		std::free(ptr);
+#endif
+	}
+
+	class Deleter
+	{
+	public:
+		template <typename T>
+		void operator()(T* ptr) const { deallocate(ptr); }
+	};
+
+	template <typename T>
+	using unique = std::unique_ptr<T, Deleter>;
+
+	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg>
+	class StaticSettings
+	{
+	public:
+		using prng_engine_t = PrngEngineT;
+		constexpr static RangeAlg range_alg_v = rangeAlg;
+	};
 }

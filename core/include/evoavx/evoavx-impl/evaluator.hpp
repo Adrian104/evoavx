@@ -1,17 +1,6 @@
 #pragma once
 #include "global.hpp"
 #include "island-dec.hpp"
-#include "static-settings.hpp"
-
-namespace evo::cc
-{
-	template <typename T>
-	concept fitness_function = requires(const T cinstance, T instance, const f64_t* genes)
-	{
-		{ cinstance.length() } -> std::same_as<u64_t>;
-		{ instance.evaluate(genes) } -> std::same_as<f64_t>;
-	};
-}
 
 namespace evo
 {

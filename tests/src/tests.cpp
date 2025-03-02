@@ -1,5 +1,5 @@
 #include "pch.hpp"
 #include "test-component.hpp"
+#include "test-global.hpp"
 #include "test-random.hpp"
 #include "test-statistics.hpp"
-#include "test-utils.hpp"

@@ -3,8 +3,10 @@
 
 TEST_CASE("Statistics are calculated with good accuracy")
 {
-	evo::Island<evo::DefaultStaticSettings> island;
-	evo::Statistics<evo::DefaultStaticSettings> stats;
+	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64>;
+
+	evo::Island<config> island;
+	evo::Statistics<config> stats;
 
 	SECTION("Tiny data set")
 	{

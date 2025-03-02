@@ -2,8 +2,6 @@
 #include "global.hpp"
 #include "component.hpp"
 #include "random/random.hpp"
-#include "static-settings.hpp"
-#include "utils.hpp"
 
 namespace evo
 {
@@ -15,12 +13,6 @@ namespace evo
 
 	template <cc::static_settings S>
 	class Statistics;
-
-	enum class Extremum
-	{
-		MINIMUM,
-		MAXIMUM
-	};
 
 	template <cc::static_settings S>
 	class Island

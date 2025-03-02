@@ -1,11 +1,26 @@
 #pragma once
 #include "global.hpp"
 #include "island-dec.hpp"
-#include "static-settings.hpp"
-#include "triplet.hpp"
 
 namespace evo
 {
+	template <
+		template <typename> typename SelectionT,
+		template <typename> typename CrossoverT,
+		template <typename> typename MutationT>
+	class Triplet
+	{
+	public:
+		template <cc::static_settings S>
+		using selection_t = SelectionT<S>;
+
+		template <cc::static_settings S>
+		using crossover_t = CrossoverT<S>;
+
+		template <cc::static_settings S>
+		using mutation_t = MutationT<S>;
+	};
+
 	template <cc::static_settings S>
 	class AlgorithmBase
 	{
