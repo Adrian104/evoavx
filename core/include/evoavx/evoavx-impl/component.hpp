@@ -15,6 +15,15 @@ namespace evo
 		static u64_t get_id() noexcept;
 
 	public:
+		Component() = default;
+		~Component() = default;
+
+		Component(const Component<BaseT>&) = delete;
+		Component<BaseT>& operator=(const Component<BaseT>&) = delete;
+
+		Component(Component<BaseT>&& other) noexcept;
+		Component<BaseT>& operator=(Component<BaseT>&& other) noexcept;
+
 		void clear() noexcept;
 		BaseT* get_used() noexcept;
 		const BaseT* get_used() const noexcept;
@@ -52,6 +61,19 @@ namespace evo
 	{
 		static const u64_t s_value = s_next++;
 		return s_value;
+	}
+
+	template <typename BaseT>
+	inline Component<BaseT>::Component(Component<BaseT>&& other) noexcept
+		: m_current(std::exchange(other.m_current, nullptr)), m_data(std::move(other.m_data)) {}
+
+	template <typename BaseT>
+	inline Component<BaseT>& Component<BaseT>::operator=(Component<BaseT>&& other) noexcept
+	{
+		m_current = std::exchange(other.m_current, nullptr);
+		m_data = std::move(other.m_data);
+
+		return *this;
 	}
 
 	template <typename BaseT>

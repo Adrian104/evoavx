@@ -124,13 +124,9 @@ namespace evo
 	inline __m512i Random<S>::compute_t([[maybe_unused]] u64_t range) noexcept requires (s_alg64)
 	{
 		if constexpr (s_unbiased)
-		{
 			return _mm512_set1_epi64(-range % range);
-		}
 		else
-		{
 			return _mm512_setzero_si512();
-		}
 	}
 
 	template <cc::static_settings S>
@@ -153,9 +149,7 @@ namespace evo
 			return _mm512_loadu_epi64(temp);
 		}
 		else
-		{
 			return _mm512_setzero_si512();
-		}
 	}
 
 #ifdef EVO_COMPILER_MSVC
@@ -166,13 +160,9 @@ namespace evo
 	inline __m512i Random<S>::compute_t([[maybe_unused]] u64_t range) noexcept requires (s_alg52)
 	{
 		if constexpr (s_unbiased)
-		{
 			return _mm512_set1_epi64((1ULL << 52) % range);
-		}
 		else
-		{
 			return _mm512_setzero_si512();
-		}
 	}
 
 	template <cc::static_settings S>
@@ -195,8 +185,6 @@ namespace evo
 			return _mm512_loadu_epi64(temp);
 		}
 		else
-		{
 			return _mm512_setzero_si512();
-		}
 	}
 }

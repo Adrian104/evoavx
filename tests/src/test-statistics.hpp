@@ -3,7 +3,7 @@
 
 TEST_CASE("Statistics are calculated with good accuracy")
 {
-	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64_UNBIASED>;
+	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64_UNBIASED, evo::Alignment::ALIGNED>;
 
 	evo::Island<config> island;
 	evo::Statistics<config> stats;
