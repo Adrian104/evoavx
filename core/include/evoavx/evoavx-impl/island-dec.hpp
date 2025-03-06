@@ -15,6 +15,14 @@ namespace evo
 	class Statistics;
 
 	template <cc::static_settings S>
+	class Shared
+	{
+	public:
+		u64_t m_seed = 0;
+		std::vector<std::pair<f64_t, f64_t>> m_genome;
+	};
+
+	template <cc::static_settings S>
 	class Island
 	{
 	public:
@@ -22,6 +30,7 @@ namespace evo
 		Component<EvaluatorBase<S>> m_evaluator;
 		Extremum m_extremum = Extremum::MINIMUM;
 		Statistics<S> m_statistics;
+		Shared<S>& m_shared;
 		Random<S> m_random;
 
 		unique<f64_t[]> m_genes;
@@ -32,6 +41,8 @@ namespace evo
 		unique<f64_t[]> m_maxDomain;
 		unique<f64_t[]> m_diffDomain;
 
+		const u64_t m_islandId;
+
 		u64_t m_indivCount = 0;
 		u64_t m_selIndivCount = 0;
 		u64_t m_genomeLength = 0;
@@ -40,7 +51,7 @@ namespace evo
 		f64_t m_crossoverProb = 0;
 		f64_t m_mutationProb = 0;
 
-		Island() = default;
+		Island(Shared<S>& shared, u64_t id);
 		~Island() = default;
 
 		Island(const Island<S>&) = delete;
@@ -48,5 +59,8 @@ namespace evo
 
 		Island(Island<S>&&) = delete;
 		Island& operator=(Island<S>&&) = delete;
+
+		void init();
+		void entry_point();
 	};
 }
