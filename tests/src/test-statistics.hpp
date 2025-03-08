@@ -3,11 +3,9 @@
 
 TEST_CASE("Statistics are calculated with good accuracy")
 {
-	using config = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64_UNBIASED, evo::Alignment::ALIGNED>;
-
-	evo::Shared<config> shared;
-	evo::Island<config> island(shared, 0);
-	evo::Statistics<config>& stats = island.m_statistics;
+	evo::Shared<evo::DefaultStaticSettings> shared;
+	evo::Island<evo::DefaultStaticSettings> island(shared, 0);
+	evo::Statistics<evo::DefaultStaticSettings>& stats = island.m_statistics;
 
 	SECTION("Tiny data set")
 	{

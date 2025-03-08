@@ -2,6 +2,7 @@
 #include "evoavx-impl/algorithm.hpp"
 #include "evoavx-impl/component.hpp"
 #include "evoavx-impl/evaluator.hpp"
+#include "evoavx-impl/evolution.hpp"
 #include "evoavx-impl/global.hpp"
 #include "evoavx-impl/island-dec.hpp"
 #include "evoavx-impl/island-def.hpp"
