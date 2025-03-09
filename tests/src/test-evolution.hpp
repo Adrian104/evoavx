@@ -10,7 +10,7 @@ public:
 		: m_length(length) {}
 
 	evo::u64_t length() const { return m_length; }
-	evo::f64_t evaluate(const evo::f64_t* genes) { return 1.0; }
+	evo::f64_t evaluate([[maybe_unused]] const evo::f64_t* genes) { return 1.0; }
 };
 
 class MyFitnessFunction2
@@ -22,7 +22,7 @@ public:
 		: m_length(length) {}
 
 	evo::u64_t length() const { return m_length; }
-	evo::f64_t evaluate(const evo::f64_t* genes) { return 2.0; }
+	evo::f64_t evaluate([[maybe_unused]] const evo::f64_t* genes) { return 2.0; }
 };
 
 template <evo::cc::static_settings S> struct MySelection { int x; };
