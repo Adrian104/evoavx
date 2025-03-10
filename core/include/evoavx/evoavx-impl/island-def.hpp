@@ -27,13 +27,14 @@ namespace evo
 			m_realGenomeLength = m_genomeLength;
 
 		u64_t genesTotal = alignment_ceil<f64_t>(m_indivCount * m_realGenomeLength);
-		u64_t selectedTotal = alignment_ceil<f64_t>(m_selIndivCount * m_realGenomeLength);
 		u64_t scoresTotal = alignment_ceil<f64_t>(m_indivCount);
+		u64_t selectedTotal = alignment_ceil<u64_t>(m_selIndivCount);
 
-		m_genes = unique<f64_t[]>(allocate<f64_t>(genesTotal));
-		m_selected = unique<f64_t[]>(allocate<f64_t>(selectedTotal));
+		m_current = unique<f64_t[]>(allocate<f64_t>(genesTotal));
+		m_next = unique<f64_t[]>(allocate<f64_t>(genesTotal));
 		m_scores = unique<f64_t[]>(allocate<f64_t>(scoresTotal));
 		m_scoresAux = unique<f64_t[]>(allocate<f64_t>(scoresTotal));
+		m_selected = unique<u64_t[]>(allocate<u64_t>(selectedTotal));
 
 		u64_t domainTotal;
 		if constexpr (S::alignment_v == Alignment::ALIGNED)
@@ -58,7 +59,7 @@ namespace evo
 			m_diffDomain[i] = b - a;
 		}
 
-		f64_t* const genesPtr = m_genes.get();
+		f64_t* const genesPtr = m_current.get();
 		const f64_t* const minPtr = m_minDomain.get();
 		const f64_t* const diffPtr = m_diffDomain.get();
 

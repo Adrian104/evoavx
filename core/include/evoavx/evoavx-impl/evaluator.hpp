@@ -44,13 +44,19 @@ namespace evo
 	template <cc::static_settings S, cc::fitness_function F>
 	inline f64_t Evaluator<S, F>::evaluate_population(Island<S>& island)
 	{
-		u64_t step = island.m_realGenomeLength;
+		const u64_t step = island.m_realGenomeLength;
+		const f64_t* genes = island.m_current.get();
+		const f64_t* const end = genes + island.m_indivCount * step;
+
+		f64_t* scores = island.m_scores.get();
 		f64_t totalScore = 0;
 
-		for (u64_t i = 0; i < island.m_indivCount; i++)
+		while (genes != end)
 		{
-			f64_t score = F::evaluate(island.m_genes.get() + i * step);
-			island.m_scores[i] = score;
+			const f64_t score = F::evaluate(genes);
+
+			genes += step;
+			*(scores++) = score;
 			totalScore += score;
 		}
 
