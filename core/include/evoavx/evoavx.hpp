@@ -10,3 +10,4 @@
 #include "evoavx-impl/random/random.hpp"
 #include "evoavx-impl/random/splitmix64.hpp"
 #include "evoavx-impl/random/xoshiro256pp.hpp"
+#include "evoavx-impl/selection/tournament.hpp"
