@@ -2,6 +2,19 @@
 #include "global.hpp"
 #include "island-dec.hpp"
 
+namespace evo::cc
+{
+	template <typename TripletT, typename S>
+	concept triplet = requires(Island<S> island,
+		typename TripletT::template selection_t<S> selection,
+		typename TripletT::template crossover_t<S> crossover,
+		typename TripletT::template mutation_t<S> mutation)
+	{
+		requires static_settings<S>;
+		selection.perform_selection(island);
+	};
+}
+
 namespace evo
 {
 	template <

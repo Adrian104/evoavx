@@ -126,39 +126,12 @@ namespace evo::cc
 		{ instance.evaluate(genes) } -> std::same_as<f64_t>;
 	};
 
-	template <typename SelectionT>
-	concept selection = requires
-	{
-		1;
-	};
-
-	template <typename CrossoverT>
-	concept crossover = requires
-	{
-		1;
-	};
-
-	template <typename MutationT>
-	concept mutation = requires
-	{
-		1;
-	};
-
 	template <typename S>
 	concept static_settings = requires
 	{
 		requires cc::wide_prng_engine<typename S::prng_engine_t>;
 		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
 		{ S::alignment_v } -> std::convertible_to<Alignment>;
-	};
-
-	template <typename TripletT, typename S>
-	concept triplet = requires
-	{
-		requires static_settings<S>;
-		requires selection<typename TripletT::template selection_t<S>>;
-		requires crossover<typename TripletT::template crossover_t<S>>;
-		requires mutation<typename TripletT::template mutation_t<S>>;
 	};
 }
 

@@ -53,32 +53,23 @@ namespace evo
 		void island_set_crossover_probability(u64_t island, f64_t value);
 		void island_set_mutation_probability(u64_t island, f64_t value);
 
-		template <cc::fitness_function F, typename... Args>
-		void set_fitness_function(Args&&... args);
+		template <cc::fitness_function F>
+		void set_fitness_function();
 
 		template <cc::fitness_function F, typename... Args>
 		F& island_set_fitness_function(u64_t island, Args&&... args);
 
 		template <cc::fitness_function F>
-		void remove_fitness_function();
-
-		template <cc::fitness_function F>
-		void island_remove_fitness_function(u64_t island);
-
-		template <cc::fitness_function F>
 		F* island_get_fitness_function(u64_t island);
+
+		template <cc::fitness_function F>
+		bool island_is_fitness_function_set(u64_t island) const;
 
 		template <cc::triplet<S> T>
 		void set_triplet();
 
 		template <cc::triplet<S> T>
 		void island_set_triplet(u64_t island);
-
-		template <cc::triplet<S> T>
-		void remove_triplet();
-
-		template <cc::triplet<S> T>
-		void island_remove_triplet(u64_t island);
 
 		template <cc::triplet<S> T>
 		auto island_get_selection(u64_t island) -> typename T::template selection_t<S>*;
@@ -88,6 +79,9 @@ namespace evo
 
 		template <cc::triplet<S> T>
 		auto island_get_mutation(u64_t island) -> typename T::template mutation_t<S>*;
+
+		template <cc::triplet<S> T>
+		bool island_is_triplet_set(u64_t island) const;
 	};
 }
 
@@ -261,11 +255,11 @@ namespace evo
 		get_island(island).m_mutationProb = value;
 	}
 
-	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>
-	inline void Evolution<S>::set_fitness_function(Args&&... args)
+	template <cc::static_settings S> template <cc::fitness_function F>
+	inline void Evolution<S>::set_fitness_function()
 	{
 		for (auto& island : m_islands)
-			island->m_evaluator.template add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...);
+			island->m_evaluator.template add_and_use<Evaluator<S, F>>();
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>
@@ -275,22 +269,15 @@ namespace evo
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F>
-	inline void Evolution<S>::remove_fitness_function()
-	{
-		for (auto& island : m_islands)
-			island->m_evaluator.template remove<Evaluator<S, F>>();
-	}
-
-	template <cc::static_settings S> template <cc::fitness_function F>
-	inline void Evolution<S>::island_remove_fitness_function(u64_t island)
-	{
-		get_island(island).m_evaluator.template remove<Evaluator<S, F>>();
-	}
-
-	template <cc::static_settings S> template <cc::fitness_function F>
 	inline F* Evolution<S>::island_get_fitness_function(u64_t island)
 	{
 		return static_cast<F*>(get_island(island).m_evaluator.template get<Evaluator<S, F>>());
+	}
+
+	template <cc::static_settings S> template <cc::fitness_function F>
+	inline bool Evolution<S>::island_is_fitness_function_set(u64_t island) const
+	{
+		return get_island(island).m_evaluator.template is_being_used<Evaluator<S, F>>();
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
@@ -304,19 +291,6 @@ namespace evo
 	inline void Evolution<S>::island_set_triplet(u64_t island)
 	{
 		get_island(island).m_algorithm.template add_and_use<Algorithm<S, T>>();
-	}
-
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline void Evolution<S>::remove_triplet()
-	{
-		for (auto& island : m_islands)
-			island->m_algorithm.template remove<Algorithm<S, T>>();
-	}
-
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline void Evolution<S>::island_remove_triplet(u64_t island)
-	{
-		get_island(island).m_algorithm.template remove<Algorithm<S, T>>();
 	}
 
 	template <cc::static_settings S> template <cc::triplet<S> T>
@@ -338,5 +312,11 @@ namespace evo
 	{
 		Algorithm<S, T>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, T>>();
 		return ptr != nullptr ? &ptr->m_mutation : nullptr;
+	}
+
+	template <cc::static_settings S> template <cc::triplet<S> T>
+	inline bool Evolution<S>::island_is_triplet_set(u64_t island) const
+	{
+		return get_island(island).m_algorithm.template is_being_used<Algorithm<S, T>>();
 	}
 }
