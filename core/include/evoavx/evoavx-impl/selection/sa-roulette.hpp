@@ -7,7 +7,7 @@
 namespace evo::s
 {
 	template <cc::static_settings S>
-	class SaRouletteLinear
+	class SaRouletteWindow
 	{
 	private:
 		f64_t m_offset = 0.1;
@@ -47,7 +47,7 @@ namespace evo::s
 namespace evo::s
 {
 	template <cc::static_settings S> template <Extremum extremum>
-	inline void SaRouletteLinear<S>::implementation(Island<S>& island)
+	inline void SaRouletteWindow<S>::implementation(Island<S>& island)
 	{
 		f64_t* input = island.m_scores.get();
 		u64_t* output = island.m_selected.get();
@@ -113,7 +113,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline void SaRouletteLinear<S>::perform_selection(Island<S>& island)
+	inline void SaRouletteWindow<S>::perform_selection(Island<S>& island)
 	{
 		if (island.m_extremum == Extremum::MAXIMUM)
 			implementation<Extremum::MAXIMUM>(island);
@@ -122,7 +122,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline void SaRouletteLinear<S>::set_offset(f64_t offset)
+	inline void SaRouletteWindow<S>::set_offset(f64_t offset)
 	{
 		if (offset < 0.0)
 			throw std::invalid_argument("Offset value can't be negative");
@@ -131,7 +131,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline f64_t SaRouletteLinear<S>::get_offset() const noexcept
+	inline f64_t SaRouletteWindow<S>::get_offset() const noexcept
 	{
 		return m_offset;
 	}
