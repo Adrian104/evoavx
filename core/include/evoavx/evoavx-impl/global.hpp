@@ -77,12 +77,6 @@ namespace evo
 		MAXIMUM
 	};
 
-	enum class Alignment
-	{
-		ALIGNED,
-		PACKED
-	};
-
 	enum class RangeAlg
 	{
 		LEMIRE_52,
@@ -131,7 +125,6 @@ namespace evo::cc
 	{
 		requires cc::wide_prng_engine<typename S::prng_engine_t>;
 		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
-		{ S::alignment_v } -> std::convertible_to<Alignment>;
 	};
 }
 
@@ -220,12 +213,11 @@ namespace evo
 	template <typename T>
 	using unique = std::unique_ptr<T, Deleter>;
 
-	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg, Alignment alignment>
+	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg>
 	class StaticSettings
 	{
 	public:
 		using prng_engine_t = PrngEngineT;
 		constexpr static RangeAlg range_alg_v = rangeAlg;
-		constexpr static Alignment alignment_v = alignment;
 	};
 }

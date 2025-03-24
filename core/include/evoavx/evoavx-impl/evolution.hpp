@@ -11,7 +11,7 @@
 
 namespace evo
 {
-	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_UNBIASED, Alignment::PACKED>;
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_UNBIASED>;
 
 	template <cc::static_settings S = DefaultStaticSettings>
 	class Evolution

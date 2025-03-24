@@ -40,7 +40,6 @@ namespace evo
 		unique<u64_t[]> m_selected;
 		unique<f64_t[]> m_minDomain;
 		unique<f64_t[]> m_maxDomain;
-		unique<f64_t[]> m_diffDomain;
 
 		const u64_t m_islandId;
 
