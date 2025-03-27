@@ -18,7 +18,7 @@ namespace evo
 		u64_t m_stagnation = 0;
 
 		void start();
-		void update(Island<S>& island, double meanEstimate);
+		void update(Island<S>& island, f64_t meanEstimate);
 	};
 }
 
@@ -32,7 +32,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void Statistics<S>::update(Island<S>& island, double meanEstimate)
+	inline void Statistics<S>::update(Island<S>& island, f64_t meanEstimate)
 	{
 		u64_t count = alignment_floor<f64_t>(island.m_indivCount);
 		u64_t extra = island.m_indivCount - count;

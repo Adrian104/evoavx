@@ -9,6 +9,9 @@ namespace evo::s
 	template <cc::static_settings S>
 	class SaRouletteWindow
 	{
+	public:
+		constexpr static bool s_usesAux = false;
+
 	private:
 		f64_t m_offset = 0.1;
 
@@ -24,6 +27,9 @@ namespace evo::s
 	template <cc::static_settings S>
 	class SaRouletteSigma
 	{
+	public:
+		constexpr static bool s_usesAux = false;
+
 	private:
 		f64_t m_offset = 1.0;
 		f64_t m_minimum = 0.1;
