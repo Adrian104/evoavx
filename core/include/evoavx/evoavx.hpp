@@ -6,6 +6,7 @@
 #include "evoavx-impl/global.hpp"
 #include "evoavx-impl/island-dec.hpp"
 #include "evoavx-impl/island-def.hpp"
+#include "evoavx-impl/shuffle.hpp"
 #include "evoavx-impl/statistics.hpp"
 #include "evoavx-impl/random/random.hpp"
 #include "evoavx-impl/random/splitmix64.hpp"

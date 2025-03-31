@@ -3,4 +3,5 @@
 #include "test-evolution.hpp"
 #include "test-global.hpp"
 #include "test-random.hpp"
+#include "test-shuffle.hpp"
 #include "test-statistics.hpp"
