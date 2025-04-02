@@ -19,7 +19,7 @@ namespace evo::s
 		void implementation(Island<S>& island);
 
 	public:
-		void perform_selection(Island<S>& island);
+		void perform(Island<S>& island);
 		void set_offset(f64_t offset);
 		f64_t get_offset() const noexcept;
 	};
@@ -40,7 +40,7 @@ namespace evo::s
 		void implementation(Island<S>& island);
 
 	public:
-		void perform_selection(Island<S>& island);
+		void perform(Island<S>& island);
 		void set_parameters(f64_t offset, f64_t minimum, f64_t factor, f64_t epsilon);
 
 		f64_t get_offset() const noexcept;
@@ -119,7 +119,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline void SaRouletteWindow<S>::perform_selection(Island<S>& island)
+	inline void SaRouletteWindow<S>::perform(Island<S>& island)
 	{
 		if (island.m_extremum == Extremum::MAXIMUM)
 			implementation<Extremum::MAXIMUM>(island);
@@ -226,7 +226,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline void SaRouletteSigma<S>::perform_selection(Island<S>& island)
+	inline void SaRouletteSigma<S>::perform(Island<S>& island)
 	{
 		if (island.m_extremum == Extremum::MAXIMUM)
 			implementation<Extremum::MAXIMUM>(island);

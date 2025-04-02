@@ -18,7 +18,7 @@ namespace evo::s
 		void implementation(Island<S>& island);
 
 	public:
-		void perform_selection(Island<S>& island);
+		void perform(Island<S>& island);
 		void set_tournament_size(u64_t size);
 		u64_t get_tournament_size() const noexcept;
 	};
@@ -66,7 +66,7 @@ namespace evo::s
 	}
 
 	template <cc::static_settings S>
-	inline void Tournament<S>::perform_selection(Island<S>& island)
+	inline void Tournament<S>::perform(Island<S>& island)
 	{
 		if (island.m_extremum == Extremum::MAXIMUM)
 			implementation<Extremum::MAXIMUM>(island);

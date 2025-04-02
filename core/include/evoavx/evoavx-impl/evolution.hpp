@@ -65,23 +65,23 @@ namespace evo
 		template <cc::fitness_function F>
 		bool island_is_fitness_function_set(u64_t island) const;
 
-		template <cc::triplet<S> T>
-		void set_triplet();
+		template <cc::blueprint<S> B>
+		void set_blueprint();
 
-		template <cc::triplet<S> T>
-		void island_set_triplet(u64_t island);
+		template <cc::blueprint<S> B>
+		void island_set_blueprint(u64_t island);
 
-		template <cc::triplet<S> T>
-		auto island_get_selection(u64_t island) -> typename T::template selection_t<S>*;
+		template <cc::blueprint<S> B>
+		auto island_get_selection(u64_t island) -> typename B::template selection_t<S>*;
 
-		template <cc::triplet<S> T>
-		auto island_get_crossover(u64_t island) -> typename T::template crossover_t<S>*;
+		template <cc::blueprint<S> B>
+		auto island_get_crossover(u64_t island) -> typename B::template crossover_t<S>*;
 
-		template <cc::triplet<S> T>
-		auto island_get_mutation(u64_t island) -> typename T::template mutation_t<S>*;
+		template <cc::blueprint<S> B>
+		auto island_get_mutation(u64_t island) -> typename B::template mutation_t<S>*;
 
-		template <cc::triplet<S> T>
-		bool island_is_triplet_set(u64_t island) const;
+		template <cc::blueprint<S> B>
+		bool island_is_blueprint_set(u64_t island) const;
 	};
 }
 
@@ -280,43 +280,43 @@ namespace evo
 		return get_island(island).m_evaluator.template is_being_used<Evaluator<S, F>>();
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline void Evolution<S>::set_triplet()
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline void Evolution<S>::set_blueprint()
 	{
 		for (auto& island : m_islands)
-			island->m_algorithm.template add_and_use<Algorithm<S, T>>();
+			island->m_algorithm.template add_and_use<Algorithm<S, B>>();
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline void Evolution<S>::island_set_triplet(u64_t island)
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline void Evolution<S>::island_set_blueprint(u64_t island)
 	{
-		get_island(island).m_algorithm.template add_and_use<Algorithm<S, T>>();
+		get_island(island).m_algorithm.template add_and_use<Algorithm<S, B>>();
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline auto Evolution<S>::island_get_selection(u64_t island) -> typename T::template selection_t<S>*
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline auto Evolution<S>::island_get_selection(u64_t island) -> typename B::template selection_t<S>*
 	{
-		Algorithm<S, T>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, T>>();
+		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_selection : nullptr;
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline auto Evolution<S>::island_get_crossover(u64_t island) -> typename T::template crossover_t<S>*
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline auto Evolution<S>::island_get_crossover(u64_t island) -> typename B::template crossover_t<S>*
 	{
-		Algorithm<S, T>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, T>>();
+		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_crossover : nullptr;
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline auto Evolution<S>::island_get_mutation(u64_t island) -> typename T::template mutation_t<S>*
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline auto Evolution<S>::island_get_mutation(u64_t island) -> typename B::template mutation_t<S>*
 	{
-		Algorithm<S, T>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, T>>();
+		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_mutation : nullptr;
 	}
 
-	template <cc::static_settings S> template <cc::triplet<S> T>
-	inline bool Evolution<S>::island_is_triplet_set(u64_t island) const
+	template <cc::static_settings S> template <cc::blueprint<S> B>
+	inline bool Evolution<S>::island_is_blueprint_set(u64_t island) const
 	{
-		return get_island(island).m_algorithm.template is_being_used<Algorithm<S, T>>();
+		return get_island(island).m_algorithm.template is_being_used<Algorithm<S, B>>();
 	}
 }

@@ -4,15 +4,15 @@
 
 namespace evo::cc
 {
-	template <typename TripletT, typename S>
-	concept triplet = requires(Island<S> island,
-		typename TripletT::template selection_t<S> selection,
-		typename TripletT::template crossover_t<S> crossover,
-		typename TripletT::template mutation_t<S> mutation)
+	template <typename B, typename S>
+	concept blueprint = requires(Island<S> island,
+		typename B::template selection_t<S> selection,
+		typename B::template crossover_t<S> crossover,
+		typename B::template mutation_t<S> mutation)
 	{
 		requires static_settings<S>;
 		{ decltype(selection)::s_usesAux } -> std::convertible_to<bool>;
-		selection.perform_selection(island);
+		selection.perform(island);
 	};
 }
 
@@ -22,7 +22,7 @@ namespace evo
 		template <typename> typename SelectionT,
 		template <typename> typename CrossoverT,
 		template <typename> typename MutationT>
-	class Triplet
+	class Blueprint
 	{
 	public:
 		template <cc::static_settings S>
@@ -44,13 +44,13 @@ namespace evo
 		virtual void phase_2(Island<S>& island) = 0;
 	};
 
-	template <cc::static_settings S, cc::triplet<S> TripletT>
+	template <cc::static_settings S, cc::blueprint<S> B>
 	class Algorithm : public AlgorithmBase<S>
 	{
 	public:
-		using selection_t = typename TripletT::template selection_t<S>;
-		using crossover_t = typename TripletT::template crossover_t<S>;
-		using mutation_t = typename TripletT::template mutation_t<S>;
+		using selection_t = typename B::template selection_t<S>;
+		using crossover_t = typename B::template crossover_t<S>;
+		using mutation_t = typename B::template mutation_t<S>;
 
 		selection_t m_selection;
 		crossover_t m_crossover;
@@ -63,8 +63,8 @@ namespace evo
 
 namespace evo
 {
-	template <cc::static_settings S, cc::triplet<S> TripletT>
-	inline void Algorithm<S, TripletT>::phase_1(Island<S>& island)
+	template <cc::static_settings S, cc::blueprint<S> B>
+	inline void Algorithm<S, B>::phase_1(Island<S>& island)
 	{
 		EvaluatorBase<S>* const evaluator = island.m_evaluator.get_used();
 		f64_t meanEstimate;
@@ -77,9 +77,9 @@ namespace evo
 		island.m_statistics.update(island, meanEstimate);
 	}
 
-	template <cc::static_settings S, cc::triplet<S> TripletT>
-	inline void Algorithm<S, TripletT>::phase_2(Island<S>& island)
+	template <cc::static_settings S, cc::blueprint<S> B>
+	inline void Algorithm<S, B>::phase_2(Island<S>& island)
 	{
-		m_selection.perform_selection(island);
+		m_selection.perform(island);
 	}
 }

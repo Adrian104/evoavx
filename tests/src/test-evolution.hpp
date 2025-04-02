@@ -85,16 +85,16 @@ TEST_CASE("Evolution getters and setters work as expected")
 	REQUIRE_THROWS(ev.island_set_crossover_probability(islands, 0.9));
 	REQUIRE_THROWS(ev.island_set_mutation_probability(islands, 0.9));
 
-	using MyTriplet = evo::Triplet<evo::s::Tournament, MyCrossover, MyMutation>;
-	using MyTriplet2 = evo::Triplet<evo::s::Tournament, MyCrossover, MyMutation2>;
+	using MyBlueprint = evo::Blueprint<evo::s::Tournament, MyCrossover, MyMutation>;
+	using MyBlueprint2 = evo::Blueprint<evo::s::Tournament, MyCrossover, MyMutation2>;
 
 	ev.set_fitness_function<MyFitnessFunction>();
-	ev.set_triplet<MyTriplet>();
+	ev.set_blueprint<MyBlueprint>();
 
 	ev.island_set_fitness_function<MyFitnessFunction>(0, 1111);
 	ev.island_set_fitness_function<MyFitnessFunction2>(1, 2222);
-	ev.island_set_triplet<MyTriplet>(2);
-	ev.island_set_triplet<MyTriplet2>(3);
+	ev.island_set_blueprint<MyBlueprint>(2);
+	ev.island_set_blueprint<MyBlueprint2>(3);
 
 	std::vector<std::pair<evo::f64_t, evo::f64_t>> expected;
 	std::vector<std::pair<evo::f64_t, evo::f64_t>> real = ev.get_genome();
@@ -136,9 +136,9 @@ TEST_CASE("Evolution getters and setters work as expected")
 	for (evo::u64_t i = 0; i < 4; i++)
 	{
 		REQUIRE(ev.island_get_fitness_function<MyFitnessFunction>(i) != nullptr);
-		REQUIRE(ev.island_get_selection<MyTriplet>(i) != nullptr);
-		REQUIRE(ev.island_get_crossover<MyTriplet>(i) != nullptr);
-		REQUIRE(ev.island_get_mutation<MyTriplet>(i) != nullptr);
+		REQUIRE(ev.island_get_selection<MyBlueprint>(i) != nullptr);
+		REQUIRE(ev.island_get_crossover<MyBlueprint>(i) != nullptr);
+		REQUIRE(ev.island_get_mutation<MyBlueprint>(i) != nullptr);
 	}
 
 	REQUIRE(ev.island_get_fitness_function<MyFitnessFunction2>(0) == nullptr);
@@ -157,25 +157,25 @@ TEST_CASE("Evolution getters and setters work as expected")
 	REQUIRE_FALSE(ev.island_is_fitness_function_set<MyFitnessFunction2>(2));
 	REQUIRE_FALSE(ev.island_is_fitness_function_set<MyFitnessFunction2>(3));
 
-	REQUIRE(ev.island_get_selection<MyTriplet2>(0) == nullptr);
-	REQUIRE(ev.island_get_crossover<MyTriplet2>(1) == nullptr);
-	REQUIRE(ev.island_get_mutation<MyTriplet2>(2) == nullptr);
-	REQUIRE(ev.island_get_selection<MyTriplet2>(3) != nullptr);
+	REQUIRE(ev.island_get_selection<MyBlueprint2>(0) == nullptr);
+	REQUIRE(ev.island_get_crossover<MyBlueprint2>(1) == nullptr);
+	REQUIRE(ev.island_get_mutation<MyBlueprint2>(2) == nullptr);
+	REQUIRE(ev.island_get_selection<MyBlueprint2>(3) != nullptr);
 
-	REQUIRE(ev.island_is_triplet_set<MyTriplet>(0));
-	REQUIRE(ev.island_is_triplet_set<MyTriplet>(1));
-	REQUIRE(ev.island_is_triplet_set<MyTriplet>(2));
-	REQUIRE_FALSE(ev.island_is_triplet_set<MyTriplet>(3));
+	REQUIRE(ev.island_is_blueprint_set<MyBlueprint>(0));
+	REQUIRE(ev.island_is_blueprint_set<MyBlueprint>(1));
+	REQUIRE(ev.island_is_blueprint_set<MyBlueprint>(2));
+	REQUIRE_FALSE(ev.island_is_blueprint_set<MyBlueprint>(3));
 
-	REQUIRE_FALSE(ev.island_is_triplet_set<MyTriplet2>(0));
-	REQUIRE_FALSE(ev.island_is_triplet_set<MyTriplet2>(1));
-	REQUIRE_FALSE(ev.island_is_triplet_set<MyTriplet2>(2));
-	REQUIRE(ev.island_is_triplet_set<MyTriplet2>(3));
+	REQUIRE_FALSE(ev.island_is_blueprint_set<MyBlueprint2>(0));
+	REQUIRE_FALSE(ev.island_is_blueprint_set<MyBlueprint2>(1));
+	REQUIRE_FALSE(ev.island_is_blueprint_set<MyBlueprint2>(2));
+	REQUIRE(ev.island_is_blueprint_set<MyBlueprint2>(3));
 
 	REQUIRE_THROWS(ev.island_get_fitness_function<MyFitnessFunction>(islands));
-	REQUIRE_THROWS(ev.island_get_selection<MyTriplet2>(islands));
-	REQUIRE_THROWS(ev.island_get_crossover<MyTriplet2>(islands));
-	REQUIRE_THROWS(ev.island_get_mutation<MyTriplet2>(islands));
+	REQUIRE_THROWS(ev.island_get_selection<MyBlueprint2>(islands));
+	REQUIRE_THROWS(ev.island_get_crossover<MyBlueprint2>(islands));
+	REQUIRE_THROWS(ev.island_get_mutation<MyBlueprint2>(islands));
 	REQUIRE_THROWS(ev.island_is_fitness_function_set<MyFitnessFunction>(islands));
-	REQUIRE_THROWS(ev.island_is_triplet_set<MyTriplet2>(islands));
+	REQUIRE_THROWS(ev.island_is_blueprint_set<MyBlueprint2>(islands));
 }
