@@ -23,7 +23,7 @@ namespace evo
 		m_genomeLength = m_shared.m_genome.size();
 		m_realGenomeLength = alignment_ceil<f64_t>(m_genomeLength);
 
-		u64_t genesTotal = m_indivCount * m_realGenomeLength;
+		u64_t genesTotal = (m_indivCount + (m_indivCount & 1)) * m_realGenomeLength;
 		u64_t scoresTotal = alignment_ceil<f64_t>(m_indivCount);
 		u64_t selectedTotal = alignment_ceil<u64_t>(m_selIndivCount);
 

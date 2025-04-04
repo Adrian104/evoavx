@@ -15,7 +15,7 @@ TEST_CASE("Function shuffle() works as expected")
 		std::vector<evo::u16_t> max(size, std::numeric_limits<evo::u16_t>::min());
 
 		for (evo::u64_t i = 0; i < size; i++)
-			data[i] = i << 2;
+			data[i] = static_cast<evo::u16_t>(i << 2);
 
 		const evo::u64_t sampleSize = 1ULL << 10;
 		for (evo::u64_t sample = 0; sample < sampleSize; sample++)

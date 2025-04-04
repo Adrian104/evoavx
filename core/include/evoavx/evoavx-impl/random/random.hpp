@@ -134,8 +134,8 @@ namespace evo
 	{
 		if constexpr (s_unbiased)
 		{
-			u64_t temp[8];
-			_mm512_storeu_epi64(temp, range);
+			alignas(g_vectorBytes) u64_t temp[8];
+			_mm512_store_epi64(temp, range);
 
 			temp[0] = -temp[0] % temp[0];
 			temp[1] = -temp[1] % temp[1];
@@ -146,7 +146,7 @@ namespace evo
 			temp[6] = -temp[6] % temp[6];
 			temp[7] = -temp[7] % temp[7];
 
-			return _mm512_loadu_epi64(temp);
+			return _mm512_load_epi64(temp);
 		}
 		else
 			return _mm512_setzero_si512();
@@ -170,8 +170,8 @@ namespace evo
 	{
 		if constexpr (s_unbiased)
 		{
-			u64_t temp[8];
-			_mm512_storeu_epi64(temp, range);
+			alignas(g_vectorBytes) u64_t temp[8];
+			_mm512_store_epi64(temp, range);
 
 			temp[0] = (1ULL << 52) % temp[0];
 			temp[1] = (1ULL << 52) % temp[1];
@@ -182,7 +182,7 @@ namespace evo
 			temp[6] = (1ULL << 52) % temp[6];
 			temp[7] = (1ULL << 52) % temp[7];
 
-			return _mm512_loadu_epi64(temp);
+			return _mm512_load_epi64(temp);
 		}
 		else
 			return _mm512_setzero_si512();

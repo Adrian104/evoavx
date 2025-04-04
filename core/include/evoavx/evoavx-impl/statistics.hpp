@@ -98,11 +98,11 @@ namespace evo
 		m_minimum = hmin;
 		m_maximum = hmax;
 
-		u64_t minPosArray[g_vectorGenes];
-		u64_t maxPosArray[g_vectorGenes];
+		alignas(g_vectorBytes) u64_t minPosArray[g_vectorGenes];
+		alignas(g_vectorBytes) u64_t maxPosArray[g_vectorGenes];
 
-		_mm512_storeu_epi64(minPosArray, minPos);
-		_mm512_storeu_epi64(maxPosArray, maxPos);
+		_mm512_store_epi64(minPosArray, minPos);
+		_mm512_store_epi64(maxPosArray, maxPos);
 
 		__m512d hmin512 = _mm512_set1_pd(hmin);
 		__m512d hmax512 = _mm512_set1_pd(hmax);
