@@ -25,9 +25,55 @@ public:
 	evo::f64_t evaluate([[maybe_unused]] const evo::f64_t* genes) { return 2.0; }
 };
 
-template <evo::cc::static_settings S> struct MyCrossover { bool y; };
-template <evo::cc::static_settings S> struct MyMutation { char z; };
-template <evo::cc::static_settings S> struct MyMutation2 { float w; };
+template <evo::cc::static_settings S>
+struct MyCrossover
+{
+	constexpr static bool s_twins = true;
+	constexpr static bool s_fusedXM = true;
+	constexpr static bool s_forceDomain = true;
+
+	bool y;
+
+	void init_generation(evo::Island<S>& island) {}
+	void init_wave(evo::Island<S>& island) {}
+
+	template <typename MutationT>
+	void perform(evo::Island<S>& island, evo::f64_t* a, evo::f64_t* b, evo::f64_t* c) {}
+};
+
+template <evo::cc::static_settings S>
+struct MyMutation
+{
+	constexpr static bool s_fusedXM = true;
+
+	char z;
+
+	void init_generation(evo::Island<S>& island) {}
+	void init_wave(evo::Island<S>& island) {}
+
+	template <bool forceDomain>
+	void perform(evo::Island<S>& island, evo::f64_t* a) {}
+
+	template <bool forceDomain>
+	static __m512d perform(__m512d genes, __m512d min, __m512d max, evo::f64_t prob, evo::Random<S>& rand) { return _mm512_setzero_pd(); }
+};
+
+template <evo::cc::static_settings S>
+struct MyMutation2
+{
+	constexpr static bool s_fusedXM = false;
+
+	float w;
+
+	void init_generation(evo::Island<S>& island) {}
+	void init_wave(evo::Island<S>& island) {}
+
+	template <bool forceDomain>
+	void perform(evo::Island<S>& island, evo::f64_t* a) {}
+
+	template <bool forceDomain>
+	static __m512d perform(__m512d genes, __m512d min, __m512d max, evo::f64_t prob, evo::Random<S>& rand) { return _mm512_setzero_pd(); }
+};
 
 TEST_CASE("Evolution getters and setters work as expected")
 {

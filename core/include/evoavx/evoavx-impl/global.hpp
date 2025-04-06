@@ -84,6 +84,18 @@ namespace evo
 		LEMIRE_52_UNBIASED,
 		LEMIRE_64_UNBIASED
 	};
+
+	enum class FusedXM
+	{
+		AUTO,
+		DISABLED
+	};
+
+	enum class ForceDomain
+	{
+		AUTO,
+		ENABLED
+	};
 }
 
 namespace evo::cc
@@ -125,6 +137,8 @@ namespace evo::cc
 	{
 		requires cc::wide_prng_engine<typename S::prng_engine_t>;
 		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
+		{ S::fused_xm_v } -> std::convertible_to<FusedXM>;
+		{ S::force_domain_v } -> std::convertible_to<ForceDomain>;
 	};
 }
 
@@ -213,11 +227,13 @@ namespace evo
 	template <typename T>
 	using unique = std::unique_ptr<T, Deleter>;
 
-	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg>
+	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg, FusedXM fusedXM, ForceDomain forceDomain>
 	class StaticSettings
 	{
 	public:
 		using prng_engine_t = PrngEngineT;
 		constexpr static RangeAlg range_alg_v = rangeAlg;
+		constexpr static FusedXM fused_xm_v = fusedXM;
+		constexpr static ForceDomain force_domain_v = forceDomain;
 	};
 }
