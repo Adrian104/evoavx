@@ -96,6 +96,18 @@ namespace evo
 		AUTO,
 		ENABLED
 	};
+
+	enum class Picker
+	{
+		RANDOM,
+		SHUFFLE
+	};
+
+	enum class Elitism
+	{
+		ENABLED,
+		DISABLED
+	};
 }
 
 namespace evo::cc
