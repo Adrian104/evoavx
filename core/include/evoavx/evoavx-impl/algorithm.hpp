@@ -116,6 +116,20 @@ namespace evo
 	{
 		m_selection.perform(island);
 		perform_xm(island);
+
+		if constexpr (B::s_elitism == Elitism::ENABLED)
+		{
+			u64_t idx = island.m_extremum == Extremum::MINIMUM ?
+				island.m_statistics.m_minimumPos : island.m_statistics.m_maximumPos;
+
+			f64_t* src = island.m_current.get() + idx * island.m_realGenomeLength;
+			f64_t* dest = island.m_next.get();
+			u64_t bytes = island.m_realGenomeLength * sizeof(f64_t);
+
+			std::memcpy(dest, src, bytes);
+		}
+
+		std::swap(island.m_current, island.m_next);
 	}
 
 	template <cc::static_settings S, cc::blueprint<S> B>
@@ -229,12 +243,61 @@ namespace evo
 	template <cc::static_settings S, cc::blueprint<S> B>
 	inline f64_t* Algorithm<S, B>::xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (s_fusedXM)
 	{
+		if (crossover)
+			m_crossover.template perform<mutation_t>(island, a, b, out);
+		else
+		{
+			const f64_t* const minPtr = island.m_minDomain.get();
+			const f64_t* const maxPtr = island.m_maxDomain.get();
+			const u64_t length = island.m_realGenomeLength;
+			const f64_t prob = island.m_mutationProb;
 
+			for (u64_t i = 0; i < length; i += g_vectorGenes)
+			{
+				__m512d min = _mm512_load_pd(minPtr + i);
+				__m512d max = _mm512_load_pd(maxPtr + i);
+
+				__m512d genesA = _mm512_load_pd(a + i);
+				_mm512_store_pd(out + i, mutation_t::perform(genesA, min, max, prob, island.m_random));
+
+				if constexpr (s_twins)
+				{
+					__m512d genesB = _mm512_load_pd(b + i);
+					_mm512_store_pd(out + i + length, mutation_t::perform(genesB, min, max, prob, island.m_random));
+				}
+			}
+		}
+
+		if constexpr (s_twins)
+			return out + (island.m_realGenomeLength << 1);
+		else
+			return out + island.m_realGenomeLength;
 	}
 
 	template <cc::static_settings S, cc::blueprint<S> B>
 	inline f64_t* Algorithm<S, B>::xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (!s_fusedXM)
 	{
+		if (crossover)
+		{
+			m_crossover.template perform<void>(island, a, b, out);
+			m_mutation.perform(island, out);
 
+			if constexpr (s_twins)
+				m_mutation.perform(island, out += island.m_realGenomeLength);
+		}
+		else
+		{
+			std::memcpy(out, a, island.m_realGenomeLength * sizeof(f64_t));
+			m_mutation.perform(island, out);
+
+			if constexpr (s_twins)
+			{
+				out += island.m_realGenomeLength;
+				std::memcpy(out, b, island.m_realGenomeLength * sizeof(f64_t));
+				m_mutation.perform(island, out);
+			}
+		}
+
+		return out + island.m_realGenomeLength;
 	}
 }
