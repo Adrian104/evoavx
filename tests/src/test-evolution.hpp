@@ -41,7 +41,7 @@ struct MyCrossover
 	void perform(evo::Island<S>&, evo::f64_t*, evo::f64_t*, evo::f64_t*) {}
 };
 
-template <evo::cc::static_settings S>
+template <evo::cc::static_settings S, bool forceDomain>
 struct MyMutation
 {
 	constexpr static bool s_fusedXM = true;
@@ -51,14 +51,11 @@ struct MyMutation
 	void init_generation(evo::Island<S>&) {}
 	void init_wave(evo::Island<S>&) {}
 
-	template <bool forceDomain>
 	void perform(evo::Island<S>&, evo::f64_t*) {}
-
-	template <bool forceDomain>
 	static __m512d perform(__m512d, __m512d, __m512d, evo::f64_t, evo::Random<S>&) { return _mm512_setzero_pd(); }
 };
 
-template <evo::cc::static_settings S>
+template <evo::cc::static_settings S, bool forceDomain>
 struct MyMutation2
 {
 	constexpr static bool s_fusedXM = false;
@@ -68,10 +65,7 @@ struct MyMutation2
 	void init_generation(evo::Island<S>&) {}
 	void init_wave(evo::Island<S>&) {}
 
-	template <bool forceDomain>
 	void perform(evo::Island<S>&, evo::f64_t*) {}
-
-	template <bool forceDomain>
 	static __m512d perform(__m512d, __m512d, __m512d, evo::f64_t, evo::Random<S>&) { return _mm512_setzero_pd(); }
 };
 

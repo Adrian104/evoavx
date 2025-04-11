@@ -22,10 +22,8 @@ namespace evo::cc
 
 		selection.perform(island);
 		crossover.template perform<decltype(mutation)>(island, &f64, &f64, &f64);
-		mutation.template perform<decltype(crossover)::s_forceDomain>(island, &f64);
-
-		{ decltype(mutation)::template perform<decltype(crossover)::s_forceDomain>
-			(m512d, m512d, m512d, f64, rand) } -> std::same_as<__m512d>;
+		mutation.perform(island, &f64);
+		{ decltype(mutation)::perform(m512d, m512d, m512d, f64, rand) } -> std::same_as<__m512d>;
 
 		crossover.init_generation(island);
 		crossover.init_wave(island);
@@ -42,7 +40,7 @@ namespace evo
 	template <
 		template <typename> typename SelectionT,
 		template <typename> typename CrossoverT,
-		template <typename> typename MutationT,
+		template <typename, bool> typename MutationT,
 		Picker picker = Picker::SHUFFLE,
 		Elitism elitism = Elitism::ENABLED>
 	class Blueprint
@@ -55,7 +53,8 @@ namespace evo
 		using crossover_t = CrossoverT<S>;
 
 		template <cc::static_settings S>
-		using mutation_t = MutationT<S>;
+		using mutation_t = MutationT<S, crossover_t<S>::s_forceDomain
+			|| S::force_domain_v == ForceDomain::ENABLED>;
 
 		constexpr static Picker s_picker = picker;
 		constexpr static Elitism s_elitism = elitism;
@@ -80,7 +79,6 @@ namespace evo
 
 		constexpr static bool s_twins = crossover_t::s_twins;
 		constexpr static bool s_fusedXM = crossover_t::s_fusedXM && mutation_t::s_fusedXM && S::fused_xm_v == FusedXM::AUTO;
-		constexpr static bool s_forceDomain = crossover_t::s_forceDomain || S::force_domain_v == ForceDomain::ENABLED;
 
 		selection_t m_selection;
 		crossover_t m_crossover;
@@ -92,7 +90,8 @@ namespace evo
 	private:
 		void perform_xm(Island<S>& island) requires (B::s_picker == Picker::RANDOM);
 		void perform_xm(Island<S>& island) requires (B::s_picker == Picker::SHUFFLE);
-		f64_t* xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover);
+		f64_t* xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (s_fusedXM);
+		f64_t* xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (!s_fusedXM);
 	};
 }
 
@@ -225,5 +224,17 @@ namespace evo
 			}
 
 		} while (left);
+	}
+
+	template <cc::static_settings S, cc::blueprint<S> B>
+	inline f64_t* Algorithm<S, B>::xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (s_fusedXM)
+	{
+
+	}
+
+	template <cc::static_settings S, cc::blueprint<S> B>
+	inline f64_t* Algorithm<S, B>::xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (!s_fusedXM)
+	{
+
 	}
 }
