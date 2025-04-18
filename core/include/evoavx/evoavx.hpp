@@ -8,6 +8,8 @@
 #include "evoavx-impl/island-def.hpp"
 #include "evoavx-impl/shuffle.hpp"
 #include "evoavx-impl/statistics.hpp"
+#include "evoavx-impl/mutation/boundary.hpp"
+#include "evoavx-impl/mutation/uniform.hpp"
 #include "evoavx-impl/random/random.hpp"
 #include "evoavx-impl/random/splitmix64.hpp"
 #include "evoavx-impl/random/xoshiro256pp.hpp"
