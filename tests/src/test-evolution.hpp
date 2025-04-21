@@ -25,22 +25,6 @@ public:
 	evo::f64_t evaluate(const evo::f64_t*) { return 2.0; }
 };
 
-template <evo::cc::static_settings S>
-struct MyCrossover
-{
-	constexpr static bool s_twins = true;
-	constexpr static bool s_fusedXM = true;
-	constexpr static bool s_forceDomain = true;
-
-	bool y;
-
-	void init_generation(evo::Island<S>&) {}
-	void init_wave(evo::Island<S>&) {}
-
-	template <typename MutationT>
-	void perform(evo::Island<S>&, evo::f64_t*, evo::f64_t*, evo::f64_t*) {}
-};
-
 TEST_CASE("Evolution getters and setters work as expected")
 {
 	constexpr evo::f64_t margin = 1e-8;
@@ -97,8 +81,8 @@ TEST_CASE("Evolution getters and setters work as expected")
 	REQUIRE_THROWS(ev.island_set_crossover_probability(islands, 0.9));
 	REQUIRE_THROWS(ev.island_set_mutation_probability(islands, 0.9));
 
-	using MyBlueprint = evo::Blueprint<evo::s::Tournament, MyCrossover, evo::m::Uniform>;
-	using MyBlueprint2 = evo::Blueprint<evo::s::SaRouletteWindow, MyCrossover, evo::m::Boundary>;
+	using MyBlueprint = evo::Blueprint<evo::s::Tournament, evo::c::Arithmetic, evo::m::Uniform>;
+	using MyBlueprint2 = evo::Blueprint<evo::s::SaRouletteWindow, evo::c::Average, evo::m::Boundary>;
 
 	ev.set_fitness_function<MyFitnessFunction>();
 	ev.set_blueprint<MyBlueprint>();
