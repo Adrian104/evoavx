@@ -11,7 +11,7 @@ namespace evo
 		assert(count > 0);
 
 		u64_t init = (count & ~static_cast<u64_t>(0b111)) + 8;
-		alignas(64) u64_t buffer[8]{ init, init - 1, init - 2, init - 3, init - 4, init - 5, init - 6, init - 7 };
+		alignas(g_vectorBytes) u64_t buffer[8]{ init, init - 1, init - 2, init - 3, init - 4, init - 5, init - 6, init - 7 };
 
 		__m512i ranges = _mm512_load_epi64(buffer);
 		__m512i subtract = _mm512_set1_epi64(8);

@@ -30,7 +30,6 @@ namespace evo
 		m_current = unique<f64_t[]>(allocate<f64_t>(genesTotal));
 		m_next = unique<f64_t[]>(allocate<f64_t>(genesTotal));
 		m_scores = unique<f64_t[]>(allocate<f64_t>(scoresTotal));
-		m_scoresAux = unique<f64_t[]>(allocate<f64_t>(scoresTotal));
 		m_selected = unique<u64_t[]>(allocate<u64_t>(selectedTotal));
 		m_minDomain = unique<f64_t[]>(allocate<f64_t>(m_realGenomeLength));
 		m_maxDomain = unique<f64_t[]>(allocate<f64_t>(m_realGenomeLength));

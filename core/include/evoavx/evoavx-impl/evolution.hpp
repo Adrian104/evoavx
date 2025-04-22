@@ -190,8 +190,8 @@ namespace evo
 	template <cc::static_settings S>
 	inline void Evolution<S>::set_population(u64_t total, u64_t selected)
 	{
-		if (selected >= total)
-			throw std::invalid_argument("The number of selected individuals must be smaller than the total number of individuals");
+		if (total == 0 || selected == 0)
+			throw std::invalid_argument("The number of individuals must be greater than zero");
 
 		for (auto& island : m_islands)
 		{
@@ -229,8 +229,8 @@ namespace evo
 	template <cc::static_settings S>
 	inline void Evolution<S>::island_set_population(u64_t island, u64_t total, u64_t selected)
 	{
-		if (selected >= total)
-			throw std::invalid_argument("The number of selected individuals must be smaller than the total number of individuals");
+		if (total == 0 || selected == 0)
+			throw std::invalid_argument("The number of individuals must be greater than zero");
 
 		Island<S>& ref = get_island(island);
 		ref.m_indivCount = total;

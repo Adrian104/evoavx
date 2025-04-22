@@ -36,7 +36,6 @@ namespace evo
 		unique<f64_t[]> m_current;
 		unique<f64_t[]> m_next;
 		unique<f64_t[]> m_scores;
-		unique<f64_t[]> m_scoresAux;
 		unique<u64_t[]> m_selected;
 		unique<f64_t[]> m_minDomain;
 		unique<f64_t[]> m_maxDomain;

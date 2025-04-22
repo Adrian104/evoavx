@@ -8,9 +8,6 @@ namespace evo::s
 	template <cc::static_settings S>
 	class Tournament
 	{
-	public:
-		constexpr static bool s_usesAux = false;
-
 	private:
 		u64_t m_size = 3;
 

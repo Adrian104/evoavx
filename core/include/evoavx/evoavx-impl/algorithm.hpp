@@ -14,7 +14,6 @@ namespace evo::cc
 	{
 		requires static_settings<S>;
 
-		{ decltype(selection)::s_usesAux } -> std::convertible_to<bool>;
 		{ decltype(crossover)::s_twins } -> std::convertible_to<bool>;
 		{ decltype(crossover)::s_fusedXM } -> std::convertible_to<bool>;
 		{ decltype(crossover)::s_forceDomain } -> std::convertible_to<bool>;
@@ -101,13 +100,7 @@ namespace evo
 	inline void Algorithm<S, B>::phase_1(Island<S>& island)
 	{
 		EvaluatorBase<S>* const evaluator = island.m_evaluator.get_used();
-		f64_t meanEstimate;
-
-		if constexpr (selection_t::s_usesAux)
-			meanEstimate = evaluator->evaluate_population_with_aux(island);
-		else
-			meanEstimate = evaluator->evaluate_population(island);
-
+		f64_t meanEstimate = evaluator->evaluate_population(island);
 		island.m_statistics.update(island, meanEstimate);
 	}
 

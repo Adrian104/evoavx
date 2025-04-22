@@ -39,7 +39,7 @@ namespace evo::m
 			__m512d diff = _mm512_sub_pd(max, min);
 			__m512d uniform = _mm512_fmadd_pd(random.next_512d(), diff, min);
 			__mmask8 mask = _mm512_cmplt_pd_mask(random.next_512d(), prob);
-			__m512d result = _mm512_mask_mov_pd(values, mask, uniform);
+			__m512d result = _mm512_mask_blend_pd(mask, values, uniform);
 
 			if constexpr (forceDomain)
 			{
@@ -57,7 +57,7 @@ namespace evo::m
 		__m512d diff = _mm512_sub_pd(max, min);
 		__m512d uniform = _mm512_fmadd_pd(random.next_512d(), diff, min);
 		__mmask8 mask = _mm512_cmplt_pd_mask(random.next_512d(), _mm512_set1_pd(prob));
-		__m512d result = _mm512_mask_mov_pd(values, mask, uniform);
+		__m512d result = _mm512_mask_blend_pd(mask, values, uniform);
 
 		if constexpr (forceDomain)
 		{

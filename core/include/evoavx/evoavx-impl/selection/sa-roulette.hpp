@@ -9,9 +9,6 @@ namespace evo::s
 	template <cc::static_settings S>
 	class SaRouletteWindow
 	{
-	public:
-		constexpr static bool s_usesAux = false;
-
 	private:
 		f64_t m_offset = 0.1;
 
@@ -27,9 +24,6 @@ namespace evo::s
 	template <cc::static_settings S>
 	class SaRouletteSigma
 	{
-	public:
-		constexpr static bool s_usesAux = false;
-
 	private:
 		f64_t m_offset = 1.0;
 		f64_t m_minimum = 0.1;
@@ -110,8 +104,8 @@ namespace evo::s
 			__m512i compressed = _mm512_maskz_compress_epi64(selected, indices);
 
 			u64_t inc = static_cast<u64_t>(_mm_popcnt_u32(_cvtmask8_u32(selected)));
-			u64_t writeBits = (1ULL << std::min(inc, outputSize - counter)) - 1ULL;
-			_mm512_mask_storeu_epi64(output, _cvtu32_mask8(writeBits), compressed);
+			u32_t count = static_cast<u32_t>(std::min(inc, outputSize - counter));
+			_mm512_mask_storeu_epi64(output, _cvtu32_mask8((1U << count) - 1U), compressed);
 
 			counter += inc;
 			output += inc;
@@ -217,8 +211,8 @@ namespace evo::s
 			__m512i compressed = _mm512_maskz_compress_epi64(selected, indices);
 
 			u64_t inc = static_cast<u64_t>(_mm_popcnt_u32(_cvtmask8_u32(selected)));
-			u64_t writeBits = (1ULL << std::min(inc, outputSize - counter)) - 1ULL;
-			_mm512_mask_storeu_epi64(output, _cvtu32_mask8(writeBits), compressed);
+			u32_t count = static_cast<u32_t>(std::min(inc, outputSize - counter));
+			_mm512_mask_storeu_epi64(output, _cvtu32_mask8((1U << count) - 1U), compressed);
 
 			counter += inc;
 			output += inc;

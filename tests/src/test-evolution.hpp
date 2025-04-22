@@ -53,24 +53,27 @@ TEST_CASE("Evolution getters and setters work as expected")
 	ev.set_seed(42);
 	ev.set_extremum(evo::Extremum::MAXIMUM);
 	ev.set_population(500, 300);
-	ev.set_population(333, 104);
+	ev.set_population(333, 504);
 	ev.set_crossover_probability(0.75);
 	ev.set_mutation_probability(0.08);
 
 	REQUIRE_THROWS(ev.set_population(0, 0));
-	REQUIRE_THROWS(ev.set_population(55, 211));
+	REQUIRE_THROWS(ev.set_population(0, 123));
+	REQUIRE_THROWS(ev.set_population(123, 0));
 	REQUIRE_THROWS(ev.set_crossover_probability(-0.5));
 	REQUIRE_THROWS(ev.set_crossover_probability(1.5));
 	REQUIRE_THROWS(ev.set_mutation_probability(-0.5));
 	REQUIRE_THROWS(ev.set_mutation_probability(1.5));
 
 	ev.island_set_extremum(0, evo::Extremum::MINIMUM);
+	ev.island_set_population(1, 555, 876);
 	ev.island_set_population(1, 987, 654);
 	ev.island_set_crossover_probability(2, 0.4);
 	ev.island_set_mutation_probability(3, 0.6);
 
 	REQUIRE_THROWS(ev.island_set_population(1, 0, 0));
-	REQUIRE_THROWS(ev.island_set_population(1, 55, 211));
+	REQUIRE_THROWS(ev.island_set_population(1, 55, 0));
+	REQUIRE_THROWS(ev.island_set_population(1, 0, 211));
 	REQUIRE_THROWS(ev.island_set_crossover_probability(2, -0.5));
 	REQUIRE_THROWS(ev.island_set_crossover_probability(2, 1.5));
 	REQUIRE_THROWS(ev.island_set_mutation_probability(3, -0.5));
@@ -110,7 +113,7 @@ TEST_CASE("Evolution getters and setters work as expected")
 	}
 
 	REQUIRE(ev.island_get_population(2).first == 333);
-	REQUIRE(ev.island_get_population(0).second == 104);
+	REQUIRE(ev.island_get_population(0).second == 504);
 	REQUIRE(ev.island_get_population(1).first == 987);
 	REQUIRE(ev.island_get_population(1).second == 654);
 

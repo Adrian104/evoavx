@@ -38,8 +38,8 @@ namespace evo::m
 			__m512d values = _mm512_load_pd(chrom + i);
 			__mmask8 flip = _mm512_movepi64_mask(random.next_512i());
 			__mmask8 mask = _mm512_cmplt_pd_mask(random.next_512d(), prob);
-			__m512d boundary = _mm512_mask_mov_pd(min, flip, max);
-			__m512d result = _mm512_mask_mov_pd(values, mask, boundary);
+			__m512d boundary = _mm512_mask_blend_pd(flip, min, max);
+			__m512d result = _mm512_mask_blend_pd(mask, values, boundary);
 
 			if constexpr (forceDomain)
 			{
@@ -56,8 +56,8 @@ namespace evo::m
 	{
 		__mmask8 flip = _mm512_movepi64_mask(random.next_512i());
 		__mmask8 mask = _mm512_cmplt_pd_mask(random.next_512d(), _mm512_set1_pd(prob));
-		__m512d boundary = _mm512_mask_mov_pd(min, flip, max);
-		__m512d result = _mm512_mask_mov_pd(values, mask, boundary);
+		__m512d boundary = _mm512_mask_blend_pd(flip, min, max);
+		__m512d result = _mm512_mask_blend_pd(mask, values, boundary);
 
 		if constexpr (forceDomain)
 		{
