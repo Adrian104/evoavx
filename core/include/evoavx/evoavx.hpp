@@ -20,3 +20,4 @@
 #include "evoavx-impl/random/xoshiro256pp.hpp"
 #include "evoavx-impl/selection/sa-roulette.hpp"
 #include "evoavx-impl/selection/tournament.hpp"
+#include "evoavx-impl/selection/unbiased-tournament.hpp"
