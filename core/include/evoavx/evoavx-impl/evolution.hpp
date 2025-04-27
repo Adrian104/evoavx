@@ -11,7 +11,8 @@
 
 namespace evo
 {
-	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_UNBIASED, FusedXM::AUTO, ForceDomain::AUTO>;
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_UNBIASED,
+		FusedXM::AUTO, ForceDomain::AUTO, Cache::ENABLED_MURMUR_HASH_64A>;
 
 	template <cc::static_settings S = DefaultStaticSettings>
 	class Evolution

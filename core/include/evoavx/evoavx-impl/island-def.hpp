@@ -61,6 +61,8 @@ namespace evo
 
 			_mm512_store_pd(genesPtr + i, values);
 		}
+
+		m_evaluator.get_used()->init_cache(m_cachePowerOf2, m_genomeLength);
 	}
 
 	template <cc::static_settings S>

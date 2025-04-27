@@ -42,6 +42,7 @@ namespace evo
 
 		const u64_t m_islandId;
 
+		u32_t m_cachePowerOf2 = 10;
 		u64_t m_indivCount = 0;
 		u64_t m_selIndivCount = 0;
 		u64_t m_genomeLength = 0;

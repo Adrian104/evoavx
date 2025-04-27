@@ -109,6 +109,13 @@ namespace evo
 		ENABLED,
 		DISABLED
 	};
+
+	enum class Cache
+	{
+		DISABLED,
+		ENABLED_CRC_32,
+		ENABLED_MURMUR_HASH_64A,
+	};
 }
 
 namespace evo::cc
@@ -152,6 +159,7 @@ namespace evo::cc
 		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
 		{ S::fused_xm_v } -> std::convertible_to<FusedXM>;
 		{ S::force_domain_v } -> std::convertible_to<ForceDomain>;
+		{ S::cache_v } -> std::convertible_to<Cache>;
 	};
 }
 
@@ -240,7 +248,8 @@ namespace evo
 	template <typename T>
 	using unique = std::unique_ptr<T, Deleter>;
 
-	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg, FusedXM fusedXM, ForceDomain forceDomain>
+	template <cc::wide_prng_engine PrngEngineT, RangeAlg rangeAlg, FusedXM fusedXM,
+		ForceDomain forceDomain, Cache cache>
 	class StaticSettings
 	{
 	public:
@@ -248,5 +257,6 @@ namespace evo
 		constexpr static RangeAlg range_alg_v = rangeAlg;
 		constexpr static FusedXM fused_xm_v = fusedXM;
 		constexpr static ForceDomain force_domain_v = forceDomain;
+		constexpr static Cache cache_v = cache;
 	};
 }
