@@ -28,11 +28,13 @@
 #define NOMINMAX
 #include <immintrin.h>
 #include <windows.h>
+#include <mpi.h>
 #endif
 
 #ifdef EVO_OS_LINUX
 #include <immintrin.h>
 #include <unistd.h>
+#include <mpi.h>
 #endif
 
 #include <algorithm>

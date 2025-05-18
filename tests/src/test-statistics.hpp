@@ -3,8 +3,7 @@
 
 TEST_CASE("Statistics are calculated with good accuracy")
 {
-	evo::Shared<evo::DefaultStaticSettings> shared;
-	evo::Island<evo::DefaultStaticSettings> island(shared, 0);
+	evo::Island<evo::DefaultStaticSettings> island;
 	evo::Statistics<evo::DefaultStaticSettings>& stats = island.m_statistics;
 
 	SECTION("Tiny data set")

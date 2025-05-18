@@ -1,6 +1,8 @@
 project(evoavx LANGUAGES CXX)
+find_package(MPI REQUIRED)
 add_library(${PROJECT_NAME} INTERFACE)
 
+target_link_libraries(${PROJECT_NAME} INTERFACE MPI::MPI_CXX)
 target_include_directories(${PROJECT_NAME} INTERFACE "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
 

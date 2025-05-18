@@ -8,20 +8,15 @@
 namespace evo
 {
 	template <cc::static_settings S>
-	inline Island<S>::Island(Shared<S>& shared, u64_t id)
-		: m_shared(shared), m_islandId(id) {}
-
-	template <cc::static_settings S>
 	inline void Island<S>::init()
 	{
 		m_statistics.start();
-		m_random.init(m_shared.m_seed);
+		m_random.init(m_seed);
 
-		for (u64_t i = 0; i < m_islandId; i++)
-			m_random.jump();
+		//for (u64_t i = 0; i < m_islandId; i++)
+		//	m_random.jump();
 
-		m_genomeLength = m_shared.m_genome.size();
-		m_realGenomeLength = alignment_ceil<f64_t>(m_genomeLength);
+		m_realGenomeLength = alignment_ceil<f64_t>(m_genome.size());
 
 		u64_t genesTotal = (m_indivCount + (m_indivCount & 1)) * m_realGenomeLength;
 		u64_t scoresTotal = alignment_ceil<f64_t>(m_indivCount);
@@ -34,14 +29,13 @@ namespace evo
 		m_minDomain = unique<f64_t[]>(allocate<f64_t>(m_realGenomeLength));
 		m_maxDomain = unique<f64_t[]>(allocate<f64_t>(m_realGenomeLength));
 
-		const std::pair<f64_t, f64_t>* genome = m_shared.m_genome.data();
 		for (u64_t i = 0, j = 0; i < m_realGenomeLength; ++i, ++j)
 		{
-			if (j == m_genomeLength)
+			if (j == m_genome.size())
 				j = 0;
 
-			m_minDomain[i] = genome[j].first;
-			m_maxDomain[i] = genome[j].second;
+			m_minDomain[i] = m_genome[j].first;
+			m_maxDomain[i] = m_genome[j].second;
 		}
 
 		f64_t* const genesPtr = m_current.get();
@@ -62,7 +56,7 @@ namespace evo
 			_mm512_store_pd(genesPtr + i, values);
 		}
 
-		m_evaluator.get_used()->init_cache(m_cachePowerOf2, m_genomeLength);
+		m_evaluator.get_used()->init_cache(m_cacheExponent, m_genome.size());
 	}
 
 	template <cc::static_settings S>

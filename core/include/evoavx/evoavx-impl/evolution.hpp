@@ -15,17 +15,10 @@ namespace evo
 		FusedXM::AUTO, ForceDomain::AUTO, Cache::ENABLED_MURMUR_HASH_64A>;
 
 	template <cc::static_settings S = DefaultStaticSettings>
-	class Evolution
+	class Evolution : private Island<S>
 	{
-	private:
-		Shared<S> m_shared;
-		std::vector<std::unique_ptr<Island<S>>> m_islands;
-
-		Island<S>& get_island(u64_t island);
-		const Island<S>& get_island(u64_t island) const;
-
 	public:
-		Evolution(u64_t islandCount = 0);
+		Evolution() = default;
 		~Evolution() = default;
 
 		Evolution(const Evolution<S>&) = delete;
@@ -34,136 +27,92 @@ namespace evo
 		Evolution(Evolution<S>&&) = delete;
 		Evolution<S>& operator=(Evolution<S>&&) = delete;
 
-		std::vector<std::pair<f64_t, f64_t>> get_genome() const noexcept;
-		std::pair<u64_t, u64_t> island_get_population(u64_t island) const;
-		f64_t island_get_crossover_probability(u64_t island) const;
-		f64_t island_get_mutation_probability(u64_t island) const;
-		Extremum island_get_extremum(u64_t island) const;
-		u64_t get_island_count() const noexcept;
+		const std::vector<std::pair<f64_t, f64_t>>& get_genome() const noexcept;
+		std::pair<u64_t, u64_t> get_population() const noexcept;
+		f64_t get_crossover_probability() const noexcept;
+		f64_t get_mutation_probability() const noexcept;
+		Extremum get_extremum() const noexcept;
 		u64_t get_seed() const noexcept;
 
 		void clear_genome() noexcept;
 		void add_gene(f64_t a, f64_t b);
 		void set_seed(u64_t seed) noexcept;
-		void set_extremum(Extremum extremum);
+		void set_extremum(Extremum extremum) noexcept;
 		void set_population(u64_t total, u64_t selected);
 		void set_crossover_probability(f64_t value);
 		void set_mutation_probability(f64_t value);
-		void island_set_extremum(u64_t island, Extremum extremum);
-		void island_set_population(u64_t island, u64_t total, u64_t selected);
-		void island_set_crossover_probability(u64_t island, f64_t value);
-		void island_set_mutation_probability(u64_t island, f64_t value);
 
-		template <cc::fitness_function F>
-		void set_fitness_function();
+		u32_t get_cache_size_exponent() const noexcept requires (S::cache_v != Cache::DISABLED);
+		void set_cache_size_exponent(u32_t exponent) requires (S::cache_v != Cache::DISABLED);
 
 		template <cc::fitness_function F, typename... Args>
-		F& island_set_fitness_function(u64_t island, Args&&... args);
+		F& set_fitness_function(Args&&... args);
 
 		template <cc::fitness_function F>
-		F* island_get_fitness_function(u64_t island);
+		F* get_fitness_function() noexcept;
 
 		template <cc::fitness_function F>
-		bool island_is_fitness_function_set(u64_t island) const;
+		bool is_fitness_function_set() const noexcept;
 
 		template <cc::blueprint<S> B>
 		void set_blueprint();
 
 		template <cc::blueprint<S> B>
-		void island_set_blueprint(u64_t island);
+		auto get_selection() noexcept -> typename B::template selection_t<S>*;
 
 		template <cc::blueprint<S> B>
-		auto island_get_selection(u64_t island) -> typename B::template selection_t<S>*;
+		auto get_crossover() noexcept -> typename B::template crossover_t<S>*;
 
 		template <cc::blueprint<S> B>
-		auto island_get_crossover(u64_t island) -> typename B::template crossover_t<S>*;
+		auto get_mutation() noexcept -> typename B::template mutation_t<S>*;
 
 		template <cc::blueprint<S> B>
-		auto island_get_mutation(u64_t island) -> typename B::template mutation_t<S>*;
-
-		template <cc::blueprint<S> B>
-		bool island_is_blueprint_set(u64_t island) const;
+		bool is_blueprint_set() const noexcept;
 	};
 }
 
 namespace evo
 {
 	template <cc::static_settings S>
-	inline Island<S>& Evolution<S>::get_island(u64_t island)
+	inline const std::vector<std::pair<f64_t, f64_t>>& Evolution<S>::get_genome() const noexcept
 	{
-		if (island >= m_islands.size())
-			throw std::invalid_argument("Invalid island identifier");
-
-		return *(m_islands[island]);
+		return Island<S>::m_genome;
 	}
 
 	template <cc::static_settings S>
-	inline const Island<S>& Evolution<S>::get_island(u64_t island) const
+	inline std::pair<u64_t, u64_t> Evolution<S>::get_population() const noexcept
 	{
-		if (island >= m_islands.size())
-			throw std::invalid_argument("Invalid island identifier");
-
-		return *(m_islands[island]);
+		return std::make_pair(Island<S>::m_indivCount, Island<S>::m_selIndivCount);
 	}
 
 	template <cc::static_settings S>
-	inline Evolution<S>::Evolution(u64_t islandCount)
+	inline f64_t Evolution<S>::get_crossover_probability() const noexcept
 	{
-		if (islandCount == 0)
-			islandCount = std::thread::hardware_concurrency();
-
-		m_islands.reserve(islandCount);
-		for (u64_t i = 0; i < islandCount; i++)
-			m_islands.push_back(std::make_unique<Island<S>>(m_shared, i));
+		return Island<S>::m_crossoverProb;
 	}
 
 	template <cc::static_settings S>
-	inline std::vector<std::pair<f64_t, f64_t>> Evolution<S>::get_genome() const noexcept
+	inline f64_t Evolution<S>::get_mutation_probability() const noexcept
 	{
-		return m_shared.m_genome;
+		return Island<S>::m_mutationProb;
 	}
 
 	template <cc::static_settings S>
-	inline std::pair<u64_t, u64_t> Evolution<S>::island_get_population(u64_t island) const
+	inline Extremum Evolution<S>::get_extremum() const noexcept
 	{
-		const Island<S>& ref = get_island(island);
-		return std::make_pair(ref.m_indivCount, ref.m_selIndivCount);
-	}
-
-	template <cc::static_settings S>
-	inline f64_t Evolution<S>::island_get_crossover_probability(u64_t island) const
-	{
-		return get_island(island).m_crossoverProb;
-	}
-
-	template <cc::static_settings S>
-	inline f64_t Evolution<S>::island_get_mutation_probability(u64_t island) const
-	{
-		return get_island(island).m_mutationProb;
-	}
-
-	template <cc::static_settings S>
-	inline Extremum Evolution<S>::island_get_extremum(u64_t island) const
-	{
-		return get_island(island).m_extremum;
-	}
-
-	template <cc::static_settings S>
-	inline u64_t Evolution<S>::get_island_count() const noexcept
-	{
-		return m_islands.size();
+		return Island<S>::m_extremum;
 	}
 
 	template <cc::static_settings S>
 	inline u64_t Evolution<S>::get_seed() const noexcept
 	{
-		return m_shared.m_seed;
+		return Island<S>::m_seed;
 	}
 
 	template <cc::static_settings S>
 	inline void Evolution<S>::clear_genome() noexcept
 	{
-		m_shared.m_genome.clear();
+		Island<S>::m_genome.clear();
 	}
 
 	template <cc::static_settings S>
@@ -172,20 +121,19 @@ namespace evo
 		if (a > b)
 			std::swap(a, b);
 
-		m_shared.m_genome.emplace_back(a, b);
+		Island<S>::m_genome.emplace_back(a, b);
 	}
 
 	template <cc::static_settings S>
 	inline void Evolution<S>::set_seed(u64_t seed) noexcept
 	{
-		m_shared.m_seed = seed;
+		Island<S>::m_seed = seed;
 	}
 
 	template <cc::static_settings S>
-	inline void Evolution<S>::set_extremum(Extremum extremum)
+	inline void Evolution<S>::set_extremum(Extremum extremum) noexcept
 	{
-		for (auto& island : m_islands)
-			island->m_extremum = extremum;
+		Island<S>::m_extremum = extremum;
 	}
 
 	template <cc::static_settings S>
@@ -194,11 +142,8 @@ namespace evo
 		if (total == 0 || selected == 0)
 			throw std::invalid_argument("The number of individuals must be greater than zero");
 
-		for (auto& island : m_islands)
-		{
-			island->m_indivCount = total;
-			island->m_selIndivCount = selected;
-		}
+		Island<S>::m_indivCount = total;
+		Island<S>::m_selIndivCount = selected;
 	}
 
 	template <cc::static_settings S>
@@ -207,8 +152,7 @@ namespace evo
 		if (value < 0.0 || value > 1.0)
 			throw std::invalid_argument("The probability must be within the range [0, 1]");
 
-		for (auto& island : m_islands)
-			island->m_crossoverProb = value;
+		Island<S>::m_crossoverProb = value;
 	}
 
 	template <cc::static_settings S>
@@ -217,107 +161,72 @@ namespace evo
 		if (value < 0.0 || value > 1.0)
 			throw std::invalid_argument("The probability must be within the range [0, 1]");
 
-		for (auto& island : m_islands)
-			island->m_mutationProb = value;
+		Island<S>::m_mutationProb = value;
 	}
 
 	template <cc::static_settings S>
-	inline void Evolution<S>::island_set_extremum(u64_t island, Extremum extremum)
+	inline u32_t Evolution<S>::get_cache_size_exponent() const noexcept requires (S::cache_v != Cache::DISABLED)
 	{
-		get_island(island).m_extremum = extremum;
+		return Island<S>::m_cacheExponent;
 	}
 
 	template <cc::static_settings S>
-	inline void Evolution<S>::island_set_population(u64_t island, u64_t total, u64_t selected)
+	inline void Evolution<S>::set_cache_size_exponent(u32_t exponent) requires (S::cache_v != Cache::DISABLED)
 	{
-		if (total == 0 || selected == 0)
-			throw std::invalid_argument("The number of individuals must be greater than zero");
+		if (exponent > 63)
+			throw std::invalid_argument("The exponent must be within the range [0, 63]");
 
-		Island<S>& ref = get_island(island);
-		ref.m_indivCount = total;
-		ref.m_selIndivCount = selected;
-	}
-
-	template <cc::static_settings S>
-	inline void Evolution<S>::island_set_crossover_probability(u64_t island, f64_t value)
-	{
-		if (value < 0.0 || value > 1.0)
-			throw std::invalid_argument("The probability must be within the range [0, 1]");
-
-		get_island(island).m_crossoverProb = value;
-	}
-
-	template <cc::static_settings S>
-	inline void Evolution<S>::island_set_mutation_probability(u64_t island, f64_t value)
-	{
-		if (value < 0.0 || value > 1.0)
-			throw std::invalid_argument("The probability must be within the range [0, 1]");
-
-		get_island(island).m_mutationProb = value;
-	}
-
-	template <cc::static_settings S> template <cc::fitness_function F>
-	inline void Evolution<S>::set_fitness_function()
-	{
-		for (auto& island : m_islands)
-			island->m_evaluator.template add_and_use<Evaluator<S, F>>();
+		Island<S>::m_cacheExponent = exponent;
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>
-	inline F& Evolution<S>::island_set_fitness_function(u64_t island, Args&&... args)
+	inline F& Evolution<S>::set_fitness_function(Args&&... args)
 	{
-		return static_cast<F&>(get_island(island).m_evaluator.template add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...));
+		return static_cast<F&>(Island<S>::m_evaluator.template add_and_use<Evaluator<S, F>>(std::forward<Args>(args)...));
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F>
-	inline F* Evolution<S>::island_get_fitness_function(u64_t island)
+	inline F* Evolution<S>::get_fitness_function() noexcept
 	{
-		return static_cast<F*>(get_island(island).m_evaluator.template get<Evaluator<S, F>>());
+		return static_cast<F*>(Island<S>::m_evaluator.template get<Evaluator<S, F>>());
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F>
-	inline bool Evolution<S>::island_is_fitness_function_set(u64_t island) const
+	inline bool Evolution<S>::is_fitness_function_set() const noexcept
 	{
-		return get_island(island).m_evaluator.template is_being_used<Evaluator<S, F>>();
+		return Island<S>::m_evaluator.template is_being_used<Evaluator<S, F>>();
 	}
 
 	template <cc::static_settings S> template <cc::blueprint<S> B>
 	inline void Evolution<S>::set_blueprint()
 	{
-		for (auto& island : m_islands)
-			island->m_algorithm.template add_and_use<Algorithm<S, B>>();
+		Island<S>::m_algorithm.template add_and_use<Algorithm<S, B>>();
 	}
 
 	template <cc::static_settings S> template <cc::blueprint<S> B>
-	inline void Evolution<S>::island_set_blueprint(u64_t island)
+	inline auto Evolution<S>::get_selection() noexcept -> typename B::template selection_t<S>*
 	{
-		get_island(island).m_algorithm.template add_and_use<Algorithm<S, B>>();
-	}
-
-	template <cc::static_settings S> template <cc::blueprint<S> B>
-	inline auto Evolution<S>::island_get_selection(u64_t island) -> typename B::template selection_t<S>*
-	{
-		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
+		Algorithm<S, B>* const ptr = Island<S>::m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_selection : nullptr;
 	}
 
 	template <cc::static_settings S> template <cc::blueprint<S> B>
-	inline auto Evolution<S>::island_get_crossover(u64_t island) -> typename B::template crossover_t<S>*
+	inline auto Evolution<S>::get_crossover() noexcept -> typename B::template crossover_t<S>*
 	{
-		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
+		Algorithm<S, B>* const ptr = Island<S>::m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_crossover : nullptr;
 	}
 
 	template <cc::static_settings S> template <cc::blueprint<S> B>
-	inline auto Evolution<S>::island_get_mutation(u64_t island) -> typename B::template mutation_t<S>*
+	inline auto Evolution<S>::get_mutation() noexcept -> typename B::template mutation_t<S>*
 	{
-		Algorithm<S, B>* const ptr = get_island(island).m_algorithm.template get<Algorithm<S, B>>();
+		Algorithm<S, B>* const ptr = Island<S>::m_algorithm.template get<Algorithm<S, B>>();
 		return ptr != nullptr ? &ptr->m_mutation : nullptr;
 	}
 
 	template <cc::static_settings S> template <cc::blueprint<S> B>
-	inline bool Evolution<S>::island_is_blueprint_set(u64_t island) const
+	inline bool Evolution<S>::is_blueprint_set() const noexcept
 	{
-		return get_island(island).m_algorithm.template is_being_used<Algorithm<S, B>>();
+		return Island<S>::m_algorithm.template is_being_used<Algorithm<S, B>>();
 	}
 }
