@@ -13,8 +13,9 @@ namespace evo
 		m_statistics.start();
 		m_random.init(m_seed);
 
-		//for (u64_t i = 0; i < m_islandId; i++)
-		//	m_random.jump();
+		MPI_Comm_rank(m_communicator, &m_rank);
+		for (int i = 0; i < m_rank; i++)
+			m_random.jump();
 
 		m_realGenomeLength = alignment_ceil<f64_t>(m_genome.size());
 
@@ -57,6 +58,29 @@ namespace evo
 		}
 
 		m_evaluator.get_used()->init_cache(m_cacheExponent, m_genome.size());
+
+		int count;
+		MPI_Graph_neighbors_count(m_communicator, m_rank, &count);
+
+		std::vector<int> neighbors(count);
+		std::vector<u64_t> migrations(count << 1, m_migIndivCount);
+
+		MPI_Graph_neighbors(m_communicator, m_rank, neighbors.size(), neighbors.data());
+		MPI_Neighbor_alltoall(migrations.data() + count, 1, MPI_UINT64_T, migrations.data(), 1, MPI_UINT64_T, m_communicator);
+
+		m_links.resize(count);
+		for (int i = 0; i < count; i++)
+		{
+			Link& crr = m_links[i];
+
+			const u64_t migrants = std::min(migrations[i], m_migIndivCount);
+			const u64_t capacity = alignment_ceil<f64_t>(migrants * m_genome.size());
+
+			crr.m_neighbor = neighbors[i];
+			crr.m_migrants = migrants;
+			crr.m_send = unique<f64_t[]>(allocate<f64_t>(capacity));
+			crr.m_recv = unique<f64_t[]>(allocate<f64_t>(capacity));
+		}
 	}
 
 	template <cc::static_settings S>

@@ -28,9 +28,11 @@ namespace evo
 		Evolution<S>& operator=(Evolution<S>&&) = delete;
 
 		const std::vector<std::pair<f64_t, f64_t>>& get_genome() const noexcept;
-		std::pair<u64_t, u64_t> get_population() const noexcept;
+		std::tuple<u64_t, u64_t, u64_t> get_population() const noexcept;
 		f64_t get_crossover_probability() const noexcept;
 		f64_t get_mutation_probability() const noexcept;
+		u64_t get_migration_interval() const noexcept;
+		MPI_Comm get_communicator() const noexcept;
 		Extremum get_extremum() const noexcept;
 		u64_t get_seed() const noexcept;
 
@@ -38,7 +40,9 @@ namespace evo
 		void add_gene(f64_t a, f64_t b);
 		void set_seed(u64_t seed) noexcept;
 		void set_extremum(Extremum extremum) noexcept;
-		void set_population(u64_t total, u64_t selected);
+		void set_communicator(MPI_Comm communicator) noexcept;
+		void set_population(u64_t total, u64_t selected, u64_t migrants);
+		void set_migration_interval(u64_t interval);
 		void set_crossover_probability(f64_t value);
 		void set_mutation_probability(f64_t value);
 
@@ -68,6 +72,8 @@ namespace evo
 
 		template <cc::blueprint<S> B>
 		bool is_blueprint_set() const noexcept;
+
+		void run();
 	};
 }
 
@@ -80,9 +86,9 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline std::pair<u64_t, u64_t> Evolution<S>::get_population() const noexcept
+	inline std::tuple<u64_t, u64_t, u64_t> Evolution<S>::get_population() const noexcept
 	{
-		return std::make_pair(Island<S>::m_indivCount, Island<S>::m_selIndivCount);
+		return std::make_tuple(Island<S>::m_indivCount, Island<S>::m_selIndivCount, Island<S>::m_migIndivCount);
 	}
 
 	template <cc::static_settings S>
@@ -95,6 +101,18 @@ namespace evo
 	inline f64_t Evolution<S>::get_mutation_probability() const noexcept
 	{
 		return Island<S>::m_mutationProb;
+	}
+
+	template <cc::static_settings S>
+	inline u64_t Evolution<S>::get_migration_interval() const noexcept
+	{
+		return Island<S>::m_migInterval;
+	}
+
+	template <cc::static_settings S>
+	inline MPI_Comm Evolution<S>::get_communicator() const noexcept
+	{
+		return Island<S>::m_communicator;
 	}
 
 	template <cc::static_settings S>
@@ -137,13 +155,32 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void Evolution<S>::set_population(u64_t total, u64_t selected)
+	inline void Evolution<S>::set_communicator(MPI_Comm communicator) noexcept
 	{
-		if (total == 0 || selected == 0)
+		Island<S>::m_communicator = communicator;
+	}
+
+	template <cc::static_settings S>
+	inline void Evolution<S>::set_population(u64_t total, u64_t selected, u64_t migrants)
+	{
+		if (total == 0 || selected == 0 || migrants == 0)
 			throw std::invalid_argument("The number of individuals must be greater than zero");
+
+		if (total <= migrants)
+			throw std::invalid_argument("The number of migrants must be smaller than the total number of individuals");
 
 		Island<S>::m_indivCount = total;
 		Island<S>::m_selIndivCount = selected;
+		Island<S>::m_migIndivCount = migrants;
+	}
+
+	template <cc::static_settings S>
+	inline void Evolution<S>::set_migration_interval(u64_t interval)
+	{
+		if (interval == 0)
+			throw std::invalid_argument("Interval must be greater than zero");
+
+		Island<S>::m_migInterval = interval;
 	}
 
 	template <cc::static_settings S>
@@ -228,5 +265,11 @@ namespace evo
 	inline bool Evolution<S>::is_blueprint_set() const noexcept
 	{
 		return Island<S>::m_algorithm.template is_being_used<Algorithm<S, B>>();
+	}
+
+	template <cc::static_settings S>
+	inline void Evolution<S>::run()
+	{
+		Island<S>::entry_point();
 	}
 }

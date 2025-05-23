@@ -14,11 +14,23 @@ namespace evo
 	template <cc::static_settings S>
 	class Statistics;
 
+	class Link
+	{
+	public:
+		int m_neighbor = 0;
+		u64_t m_counter = 0;
+		u64_t m_migrants = 0;
+		unique<f64_t[]> m_send;
+		unique<f64_t[]> m_recv;
+	};
+
 	template <cc::static_settings S>
 	class Island
 	{
 	public:
+		std::vector<Link> m_links;
 		std::vector<std::pair<f64_t, f64_t>> m_genome;
+
 		Component<AlgorithmBase<S>> m_algorithm;
 		Component<EvaluatorBase<S>> m_evaluator;
 		Extremum m_extremum = Extremum::MINIMUM;
@@ -32,9 +44,14 @@ namespace evo
 		unique<f64_t[]> m_minDomain;
 		unique<f64_t[]> m_maxDomain;
 
+		MPI_Comm m_communicator{};
+		int m_rank = 0;
+
 		u32_t m_cacheExponent = 0;
 		u64_t m_indivCount = 0;
 		u64_t m_selIndivCount = 0;
+		u64_t m_migIndivCount = 0;
+		u64_t m_migInterval = 0;
 		u64_t m_realGenomeLength = 0;
 		u64_t m_seed = 0;
 

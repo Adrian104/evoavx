@@ -52,6 +52,7 @@
 #include <random>
 #include <stdexcept>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
