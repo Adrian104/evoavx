@@ -23,6 +23,7 @@ namespace evo
 		virtual u64_t get_length() const = 0;
 		virtual f64_t evaluate_individual(const f64_t* genes) = 0;
 		virtual f64_t evaluate_population(Island<S>& island) = 0;
+		virtual void evaluate_subset(Island<S>& island, u64_t count) = 0;
 	};
 
 	template <cc::static_settings S, cc::fitness_function F>
@@ -39,6 +40,7 @@ namespace evo
 		u64_t get_length() const override;
 		f64_t evaluate_individual(const f64_t* genes) override;
 		f64_t evaluate_population(Island<S>& island) override;
+		void evaluate_subset(Island<S>& island, u64_t count) override;
 	};
 }
 
@@ -168,5 +170,21 @@ namespace evo
 		}
 
 		return totalScore / island.m_indivCount;
+	}
+
+	template <cc::static_settings S, cc::fitness_function F>
+	inline void Evaluator<S, F>::evaluate_subset(Island<S>& island, u64_t count)
+	{
+		f64_t* const scores = island.m_scores.get();
+		const f64_t* const genes = island.m_current.get();
+		const u64_t step = island.m_realGenomeLength;
+		const u64_t* ptr = island.m_selected.get();
+		const u64_t* const end = ptr + count;
+
+		while (ptr != end)
+		{
+			const u64_t idx = *(ptr++);
+			scores[idx] = evaluate_impl(genes + idx * step);
+		}
 	}
 }

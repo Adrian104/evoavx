@@ -1,3 +1,4 @@
+#pragma once
 #include "pch.hpp"
 #include <evoavx/evoavx.hpp>
 #include "reference/splitmix64.hpp"

@@ -28,7 +28,11 @@ namespace evo
 	class Island
 	{
 	public:
+		enum class State { RUNNING, FINALIZING, IDLE };
+		State m_state = State::IDLE;
+
 		std::vector<Link> m_links;
+		std::vector<MPI_Request> m_requests;
 		std::vector<std::pair<f64_t, f64_t>> m_genome;
 
 		Component<AlgorithmBase<S>> m_algorithm;
@@ -45,6 +49,7 @@ namespace evo
 		unique<f64_t[]> m_maxDomain;
 
 		MPI_Comm m_communicator{};
+		MPI_Request m_shutdownRequest{};
 		int m_rank = 0;
 
 		u32_t m_cacheExponent = 0;
@@ -68,6 +73,8 @@ namespace evo
 		Island& operator=(Island<S>&&) = delete;
 
 		void init();
+		void check_stop_condition();
+		void communicate();
 		void entry_point();
 	};
 }

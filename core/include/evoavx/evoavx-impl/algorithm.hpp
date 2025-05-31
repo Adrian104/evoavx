@@ -64,8 +64,7 @@ namespace evo
 	{
 	public:
 		virtual ~AlgorithmBase() = default;
-		virtual void phase_1(Island<S>& island) = 0;
-		virtual void phase_2(Island<S>& island) = 0;
+		virtual void evolve(Island<S>& island) = 0;
 	};
 
 	template <cc::static_settings S, cc::blueprint<S> B>
@@ -83,8 +82,7 @@ namespace evo
 		crossover_t m_crossover;
 		mutation_t m_mutation;
 
-		void phase_1(Island<S>& island) override;
-		void phase_2(Island<S>& island) override;
+		void evolve(Island<S>& island) override;
 
 	private:
 		void perform_xm(Island<S>& island) requires (B::s_picker == Picker::RANDOM);
@@ -97,15 +95,7 @@ namespace evo
 namespace evo
 {
 	template <cc::static_settings S, cc::blueprint<S> B>
-	inline void Algorithm<S, B>::phase_1(Island<S>& island)
-	{
-		EvaluatorBase<S>* const evaluator = island.m_evaluator.get_used();
-		f64_t meanEstimate = evaluator->evaluate_population(island);
-		island.m_statistics.update(island, meanEstimate);
-	}
-
-	template <cc::static_settings S, cc::blueprint<S> B>
-	inline void Algorithm<S, B>::phase_2(Island<S>& island)
+	inline void Algorithm<S, B>::evolve(Island<S>& island)
 	{
 		m_selection.perform(island);
 		perform_xm(island);
@@ -162,7 +152,7 @@ namespace evo
 			__m512i randB = island.m_random.range_512i(rangeB);
 			__m512d randX = island.m_random.next_512d();
 
-			__mmask8 inc = _mm512_cmple_epi64_mask(randA, randB);
+			__mmask8 inc = _mm512_cmple_epu64_mask(randA, randB);
 			u32_t cx = _cvtmask8_u32(_mm512_cmplt_pd_mask(randX, prob));
 
 			randB = _mm512_mask_add_epi64(randB, inc, randB, _mm512_set1_epi64(1));
