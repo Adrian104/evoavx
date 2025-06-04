@@ -96,7 +96,95 @@ namespace evo
 	template <cc::static_settings S>
 	inline void Island<S>::communicate()
 	{
+		int flag;
+		MPI_Iprobe(MPI_ANY_SOURCE, g_migrationTag, m_communicator, &flag, MPI_STATUS_IGNORE);
 
+		if (m_state == State::RUNNING)
+		{
+			for (Link& link : m_links)
+				flag |= ++link.m_counter >= m_migInterval;
+		}
+
+		if (!flag)
+			return;
+
+		u64_t* const sel = m_selected.get();
+		const u64_t selCount = m_indivCount - 1;
+		const u64_t bestIdx = m_extremum == Extremum::MAXIMUM ? m_statistics.m_maximumPos : m_statistics.m_minimumPos;
+
+		__m512i val = _mm512_set_epi64(7, 6, 5, 4, 3, 2, 1, 0);
+		__m512i inc1 = _mm512_set1_epi64(1);
+		__m512i inc8 = _mm512_set1_epi64(8);
+		__m512i excl = _mm512_set1_epi64(bestIdx);
+
+		for (u64_t i = 0; i < selCount; i += g_vectorGenes)
+		{
+			__mmask8 cmp = _mm512_cmple_epu64_mask(excl, val);
+			__m512i out = _mm512_mask_add_epi64(val, cmp, val, inc1);
+
+			_mm512_store_epi64(sel + i, out);
+			val = _mm512_add_epi64(val, inc8);
+		}
+
+		shuffle(sel, selCount, m_random);
+
+		u64_t index = 0;
+		MPI_Request* req = m_requests.data();
+		f64_t* const local = m_current.get();
+		const std::size_t bytes = m_genome.size() * sizeof(f64_t);
+
+		for (Link& link : m_links)
+		{
+			MPI_Iprobe(link.m_neighbor, g_migrationTag, m_communicator, &flag, MPI_STATUS_IGNORE);
+			if (m_state == State::RUNNING)
+				flag |= link.m_counter >= m_migInterval;
+
+			if (!flag)
+				continue;
+
+			f64_t* remote = link.m_send.get();
+			std::memcpy(remote, local + bestIdx * m_realGenomeLength, bytes);
+
+			for (u64_t i = 1; i < link.m_migrants; i++)
+			{
+				std::memcpy(remote += m_genome.size(), local + sel[index++] * m_realGenomeLength, bytes);
+				if (index >= selCount)
+					index = 0;
+			}
+
+			link.m_counter = std::numeric_limits<u64_t>::max();
+			const int cnt = static_cast<int>(link.m_migrants * m_genome.size());
+
+			MPI_Isend(link.m_send.get(), cnt, MPI_DOUBLE, link.m_neighbor, g_migrationTag, m_communicator, req++);
+			MPI_Irecv(link.m_recv.get(), cnt, MPI_DOUBLE, link.m_neighbor, g_migrationTag, m_communicator, req++);
+		}
+
+		MPI_Waitall(req - m_requests.data(), m_requests.data(), MPI_STATUSES_IGNORE);
+
+		u64_t total = 0;
+		index = 0;
+
+		for (Link& link : m_links)
+		{
+			if (link.m_counter != std::numeric_limits<u64_t>::max())
+				continue;
+
+			link.m_counter = 0;
+			total += link.m_migrants;
+			const f64_t* remote = link.m_recv.get();
+
+			for (u64_t i = 0; i < link.m_migrants; i++)
+			{
+				std::memcpy(local + sel[index++] * m_realGenomeLength, remote, bytes);
+				remote += m_genome.size();
+
+				if (index >= selCount)
+					index = 0;
+			}
+		}
+
+		m_evaluator.get_used()->evaluate_subset(*this, std::min(total, selCount));
+		m_statistics.refresh(*this);
 	}
 
 	template <cc::static_settings S>

@@ -71,6 +71,7 @@ namespace evo
 	using u64_t = std::uint64_t;
 	using clk_t = std::chrono::high_resolution_clock;
 
+	constexpr inline int g_migrationTag = 0;
 	constexpr inline std::size_t g_vectorBits = 512;
 	constexpr inline std::size_t g_vectorBytes = g_vectorBits / 8;
 	constexpr inline std::size_t g_vectorGenes = g_vectorBytes / sizeof(f64_t);
