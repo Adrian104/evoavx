@@ -76,6 +76,12 @@ namespace evo
 	constexpr inline std::size_t g_vectorBytes = g_vectorBits / 8;
 	constexpr inline std::size_t g_vectorGenes = g_vectorBytes / sizeof(f64_t);
 
+	enum class Action
+	{
+		CONTINUE,
+		STOP
+	};
+
 	enum class Extremum
 	{
 		MINIMUM,
@@ -159,7 +165,7 @@ namespace evo::cc
 	template <typename S>
 	concept static_settings = requires
 	{
-		requires cc::wide_prng_engine<typename S::prng_engine_t>;
+		requires wide_prng_engine<typename S::prng_engine_t>;
 		{ S::range_alg_v } -> std::convertible_to<RangeAlg>;
 		{ S::fused_xm_v } -> std::convertible_to<FusedXM>;
 		{ S::force_domain_v } -> std::convertible_to<ForceDomain>;

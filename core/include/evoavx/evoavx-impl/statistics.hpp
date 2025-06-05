@@ -4,7 +4,6 @@
 
 namespace evo
 {
-	template <cc::static_settings S>
 	class Statistics
 	{
 	public:
@@ -16,24 +15,41 @@ namespace evo
 		u64_t m_maximumPos = 0;
 		u64_t m_generation = 0;
 		u64_t m_stagnation = 0;
+	};
 
+	template <cc::static_settings S>
+	class StatisticsEngine : public Statistics
+	{
+	public:
 		void start();
 		void refresh(Island<S>& island);
 		void update(Island<S>& island, f64_t meanEstimate);
 	};
+
+	class Inspector
+	{
+	public:
+		virtual Action inspect(const Statistics&) = 0;
+	};
+}
+
+namespace evo::cc
+{
+	template <typename I>
+	concept inspector = inherits_from<I, Inspector>;
 }
 
 namespace evo
 {
 	template <cc::static_settings S>
-	inline void Statistics<S>::start()
+	inline void StatisticsEngine<S>::start()
 	{
 		m_generation = 0;
 		m_stagnation = 0;
 	}
 
 	template <cc::static_settings S>
-	inline void Statistics<S>::refresh(Island<S>& island)
+	inline void StatisticsEngine<S>::refresh(Island<S>& island)
 	{
 		const u64_t count = alignment_floor<f64_t>(island.m_indivCount);
 		const u32_t extra = (1 << (island.m_indivCount - count)) - 1;
@@ -125,7 +141,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void Statistics<S>::update(Island<S>& island, f64_t meanEstimate)
+	inline void StatisticsEngine<S>::update(Island<S>& island, f64_t meanEstimate)
 	{
 		const u64_t count = alignment_floor<f64_t>(island.m_indivCount);
 		const u32_t extra = (1 << (island.m_indivCount - count)) - 1;

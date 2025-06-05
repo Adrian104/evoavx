@@ -5,6 +5,8 @@
 
 namespace evo
 {
+	class Inspector;
+
 	template <cc::static_settings S>
 	class AlgorithmBase;
 
@@ -12,7 +14,7 @@ namespace evo
 	class EvaluatorBase;
 
 	template <cc::static_settings S>
-	class Statistics;
+	class StatisticsEngine;
 
 	class Link
 	{
@@ -35,10 +37,12 @@ namespace evo
 		std::vector<MPI_Request> m_requests;
 		std::vector<std::pair<f64_t, f64_t>> m_genome;
 
+		Component<Inspector> m_inspector;
 		Component<AlgorithmBase<S>> m_algorithm;
 		Component<EvaluatorBase<S>> m_evaluator;
+
 		Extremum m_extremum = Extremum::MINIMUM;
-		Statistics<S> m_statistics;
+		StatisticsEngine<S> m_statistics;
 		Random<S> m_random;
 
 		unique<f64_t[]> m_current;

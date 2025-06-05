@@ -49,6 +49,15 @@ namespace evo
 		u32_t get_cache_size_exponent() const noexcept requires (S::cache_v != Cache::DISABLED);
 		void set_cache_size_exponent(u32_t exponent) requires (S::cache_v != Cache::DISABLED);
 
+		template <cc::inspector I, typename... Args>
+		I& set_inspector(Args&&... args);
+
+		template <cc::inspector I>
+		I* get_inspector() noexcept;
+
+		template <cc::inspector I>
+		bool is_inspector_set() const noexcept;
+
 		template <cc::fitness_function F, typename... Args>
 		F& set_fitness_function(Args&&... args);
 
@@ -214,6 +223,24 @@ namespace evo
 			throw std::invalid_argument("The exponent must be within the range [0, 63]");
 
 		Island<S>::m_cacheExponent = exponent;
+	}
+
+	template <cc::static_settings S> template <cc::inspector I, typename... Args>
+	inline I& Evolution<S>::set_inspector(Args&&... args)
+	{
+		return Island<S>::m_inspector.template add_and_use<I>(std::forward<Args>(args)...);
+	}
+
+	template <cc::static_settings S> template <cc::inspector I>
+	inline I* Evolution<S>::get_inspector() noexcept
+	{
+		return Island<S>::m_inspector.template get<I>();
+	}
+
+	template <cc::static_settings S> template <cc::inspector I>
+	inline bool Evolution<S>::is_inspector_set() const noexcept
+	{
+		return Island<S>::m_inspector.template is_being_used<I>();
 	}
 
 	template <cc::static_settings S> template <cc::fitness_function F, typename... Args>

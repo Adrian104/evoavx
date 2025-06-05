@@ -5,7 +5,7 @@
 TEST_CASE("Statistics are calculated with good accuracy on refresh()")
 {
 	evo::Island<evo::DefaultStaticSettings> island;
-	evo::Statistics<evo::DefaultStaticSettings>& stats = island.m_statistics;
+	evo::StatisticsEngine<evo::DefaultStaticSettings>& stats = island.m_statistics;
 
 	SECTION("Tiny data set")
 	{
@@ -88,7 +88,7 @@ TEST_CASE("Statistics are calculated with good accuracy on refresh()")
 TEST_CASE("Statistics are calculated with good accuracy on update()")
 {
 	evo::Island<evo::DefaultStaticSettings> island;
-	evo::Statistics<evo::DefaultStaticSettings>& stats = island.m_statistics;
+	evo::StatisticsEngine<evo::DefaultStaticSettings>& stats = island.m_statistics;
 
 	SECTION("Tiny data set")
 	{

@@ -90,7 +90,26 @@ namespace evo
 	template <cc::static_settings S>
 	inline void Island<S>::check_stop_condition()
 	{
+		int flag;
+		const Action action = m_inspector.get_used()->inspect(m_statistics);
 
+		switch (m_state)
+		{
+		case State::RUNNING:
+			if (action != Action::STOP)
+				break;
+
+			MPI_Ibarrier(m_communicator, &m_shutdownRequest);
+			[[fallthrough]];
+
+		case State::FINALIZING:
+			MPI_Test(&m_shutdownRequest, &flag, MPI_STATUS_IGNORE);
+			m_state = flag ? State::IDLE : State::FINALIZING;
+			[[fallthrough]];
+
+		default:
+			break;
+		}
 	}
 
 	template <cc::static_settings S>
