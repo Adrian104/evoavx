@@ -64,6 +64,9 @@ namespace evo
 		int count;
 		MPI_Graph_neighbors_count(m_communicator, m_rank, &count);
 
+		if (count <= 0)
+			return;
+
 		m_requests.resize(count << 1);
 		m_links.resize(count);
 
