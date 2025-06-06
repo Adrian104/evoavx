@@ -26,6 +26,13 @@ namespace evo
 		unique<f64_t[]> m_recv;
 	};
 
+	class Result
+	{
+	public:
+		f64_t m_score = 0;
+		std::vector<f64_t> m_args;
+	};
+
 	template <cc::static_settings S>
 	class Island
 	{
@@ -79,6 +86,7 @@ namespace evo
 		void init();
 		void check_stop_condition();
 		void communicate();
-		void entry_point();
+		Result reduce();
+		Result entry_point();
 	};
 }

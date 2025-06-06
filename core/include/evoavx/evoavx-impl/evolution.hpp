@@ -82,7 +82,7 @@ namespace evo
 		template <cc::blueprint<S> B>
 		bool is_blueprint_set() const noexcept;
 
-		void run();
+		Result run();
 	};
 }
 
@@ -295,8 +295,8 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void Evolution<S>::run()
+	inline Result Evolution<S>::run()
 	{
-		Island<S>::entry_point();
+		return Island<S>::entry_point();
 	}
 }

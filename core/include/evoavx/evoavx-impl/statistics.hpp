@@ -22,8 +22,8 @@ namespace evo
 	{
 	public:
 		void start();
-		void refresh(Island<S>& island);
-		void update(Island<S>& island, f64_t meanEstimate);
+		void refresh(const Island<S>& island);
+		void update(const Island<S>& island, f64_t meanEstimate);
 	};
 
 	class Inspector
@@ -49,7 +49,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void StatisticsEngine<S>::refresh(Island<S>& island)
+	inline void StatisticsEngine<S>::refresh(const Island<S>& island)
 	{
 		const u64_t count = alignment_floor<f64_t>(island.m_indivCount);
 		const u32_t extra = (1 << (island.m_indivCount - count)) - 1;
@@ -141,7 +141,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void StatisticsEngine<S>::update(Island<S>& island, f64_t meanEstimate)
+	inline void StatisticsEngine<S>::update(const Island<S>& island, f64_t meanEstimate)
 	{
 		const u64_t count = alignment_floor<f64_t>(island.m_indivCount);
 		const u32_t extra = (1 << (island.m_indivCount - count)) - 1;

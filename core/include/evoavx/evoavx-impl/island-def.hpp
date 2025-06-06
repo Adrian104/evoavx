@@ -207,7 +207,39 @@ namespace evo
 	}
 
 	template <cc::static_settings S>
-	inline void Island<S>::entry_point()
+	inline Result Island<S>::reduce()
+	{
+		struct
+		{
+			double m_score;
+			int m_rank;
+
+		} local, global;
+
+		const auto [localBestScore, localBestPos, op] = m_extremum == Extremum::MAXIMUM
+			? std::make_tuple(m_statistics.m_maximum, m_statistics.m_maximumPos, MPI_MAXLOC)
+			: std::make_tuple(m_statistics.m_minimum, m_statistics.m_minimumPos, MPI_MINLOC);
+
+		local.m_score = localBestScore;
+		local.m_rank = m_rank;
+
+		MPI_Allreduce(&local, &global, 1, MPI_DOUBLE_INT, op, m_communicator);
+
+		Result result;
+		result.m_score = global.m_score;
+		result.m_args.resize(m_genome.size());
+
+		f64_t* const buffer = result.m_args.data();
+		const f64_t* const src = m_current.get() + localBestPos * m_realGenomeLength;
+
+		std::memcpy(buffer, src, m_genome.size() * sizeof(f64_t));
+		MPI_Bcast(buffer, m_genome.size(), MPI_DOUBLE, global.m_rank, m_communicator);
+
+		return result;
+	}
+
+	template <cc::static_settings S>
+	inline Result Island<S>::entry_point()
 	{
 		init();
 		while (true)
@@ -222,5 +254,7 @@ namespace evo
 			communicate();
 			m_algorithm.get_used()->evolve(*this);
 		}
+
+		return reduce();
 	}
 }
