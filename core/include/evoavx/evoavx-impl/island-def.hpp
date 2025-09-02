@@ -207,7 +207,7 @@ namespace evo
 		}
 
 		m_evaluator.get_used()->evaluate_subset(*this, std::min(total, selCount));
-		m_statistics.refresh(*this);
+		m_statistics.update(*this, false);
 	}
 
 	template <cc::static_settings S>
@@ -249,10 +249,10 @@ namespace evo
 		init();
 		while (true)
 		{
-			const f64_t meanEstimate = m_evaluator.get_used()->evaluate_population(*this);
-			m_statistics.update(*this, meanEstimate);
-			check_stop_condition();
+			m_statistics.m_mean = m_evaluator.get_used()->evaluate_population(*this);
+			m_statistics.update(*this, true);
 
+			check_stop_condition();
 			if (m_state == State::IDLE)
 				break;
 
