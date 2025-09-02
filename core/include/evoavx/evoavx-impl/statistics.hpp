@@ -4,6 +4,8 @@
 
 namespace evo
 {
+	class Result;
+
 	class Statistics
 	{
 	public:
@@ -29,6 +31,9 @@ namespace evo
 	class Inspector
 	{
 	public:
+		virtual ~Inspector() = default;
+		virtual void init() {}
+		virtual void finish(const Result&) {}
 		virtual Action inspect(const Statistics&) = 0;
 	};
 }

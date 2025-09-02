@@ -14,6 +14,7 @@ namespace evo
 		m_state = State::RUNNING;
 		m_statistics.start();
 		m_random.init(m_seed);
+		m_inspector.get_used()->init();
 
 		MPI_Comm_rank(m_communicator, &m_rank);
 		for (int i = 0; i < m_rank; i++)
@@ -238,6 +239,7 @@ namespace evo
 		std::memcpy(buffer, src, m_genome.size() * sizeof(f64_t));
 		MPI_Bcast(buffer, m_genome.size(), MPI_DOUBLE, global.m_rank, m_communicator);
 
+		m_inspector.get_used()->finish(result);
 		return result;
 	}
 
