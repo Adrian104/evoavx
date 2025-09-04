@@ -29,6 +29,7 @@ namespace evo
 	class Result
 	{
 	public:
+		f64_t m_wtime = 0;
 		f64_t m_score = 0;
 		std::vector<f64_t> m_args;
 	};

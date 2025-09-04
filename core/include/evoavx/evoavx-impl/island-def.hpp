@@ -239,7 +239,9 @@ namespace evo
 		std::memcpy(buffer, src, m_genome.size() * sizeof(f64_t));
 		MPI_Bcast(buffer, m_genome.size(), MPI_DOUBLE, global.m_rank, m_communicator);
 
+		result.m_wtime = MPI_Wtime() - m_statistics.get_start_time();
 		m_inspector.get_used()->finish(result);
+
 		return result;
 	}
 

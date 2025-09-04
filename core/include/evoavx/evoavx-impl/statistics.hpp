@@ -9,6 +9,7 @@ namespace evo
 	class Statistics
 	{
 	public:
+		f64_t m_wtime = 0;
 		f64_t m_mean = 0;
 		f64_t m_stdev = 0;
 		f64_t m_minimum = 0;
@@ -22,9 +23,13 @@ namespace evo
 	template <cc::static_settings S>
 	class StatisticsEngine : public Statistics
 	{
+	private:
+		f64_t m_startTime = 0;
+
 	public:
 		void start();
 		void update(const Island<S>& island, bool advance);
+		f64_t get_start_time() const noexcept;
 	};
 
 	class Inspector
@@ -48,6 +53,7 @@ namespace evo
 	template <cc::static_settings S>
 	inline void StatisticsEngine<S>::start()
 	{
+		m_startTime = MPI_Wtime();
 		m_generation = 0;
 		m_stagnation = 0;
 	}
@@ -157,5 +163,12 @@ namespace evo
 
 		m_mean += hsum1 / k;
 		m_stdev = std::sqrt(hsum2 / k - (hsum1 * hsum1) / (k * k));
+		m_wtime = MPI_Wtime() - m_startTime;
+	}
+
+	template <cc::static_settings S>
+	inline f64_t StatisticsEngine<S>::get_start_time() const noexcept
+	{
+		return m_startTime;
 	}
 }

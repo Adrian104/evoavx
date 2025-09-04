@@ -41,7 +41,6 @@
 #include <array>
 #include <bit>
 #include <cassert>
-#include <chrono>
 #include <cmath>
 #include <concepts>
 #include <cstdint>
@@ -69,7 +68,6 @@ namespace evo
 	using u16_t = std::uint16_t;
 	using u32_t = std::uint32_t;
 	using u64_t = std::uint64_t;
-	using clk_t = std::chrono::high_resolution_clock;
 
 	constexpr inline int g_migrationTag = 0;
 	constexpr inline std::size_t g_vectorBits = 512;
