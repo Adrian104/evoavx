@@ -11,8 +11,8 @@
 
 namespace evo
 {
-	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_UNBIASED,
-		FusedXM::AUTO, ForceDomain::AUTO, Cache::ENABLED_MURMUR_HASH_64A>;
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_52,
+		FusedXM::AUTO, ForceDomain::AUTO, Cache::DISABLED>;
 
 	template <cc::static_settings S = DefaultStaticSettings>
 	class Evolution : private Island<S>
