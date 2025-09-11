@@ -40,6 +40,9 @@ namespace evo::c
 	template <cc::static_settings S> template <typename M>
 	inline void Linear<S>::perform(Island<S>& island, f64_t* chromA, f64_t* chromB, f64_t* output)
 	{
+		const f64_t* const minPtr = island.m_minDomain.get();
+		const f64_t* const maxPtr = island.m_maxDomain.get();
+
 		f64_t* output2 = output + m_length;
 		f64_t* output3 = m_temp.get();
 
@@ -50,11 +53,18 @@ namespace evo::c
 		{
 			__m512d srcA = _mm512_load_pd(chromA + i);
 			__m512d srcB = _mm512_load_pd(chromB + i);
+			__m512d min = _mm512_load_pd(minPtr + i);
+			__m512d max = _mm512_load_pd(maxPtr + i);
 			__m512d srcA05 = _mm512_mul_pd(srcA, c05);
 			__m512d srcB05 = _mm512_mul_pd(srcB, c05);
 			__m512d valA = _mm512_add_pd(srcA05, srcB05);
 			__m512d valB = _mm512_fmsub_pd(srcA, c15, srcB05);
 			__m512d valC = _mm512_fmsub_pd(srcB, c15, srcA05);
+
+			valB = _mm512_max_pd(valB, min);
+			valC = _mm512_max_pd(valC, min);
+			valB = _mm512_min_pd(valB, max);
+			valC = _mm512_min_pd(valC, max);
 
 			_mm512_store_pd(output + i, valA);
 			_mm512_store_pd(output2 + i, valB);
