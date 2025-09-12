@@ -15,7 +15,7 @@ namespace evo::c
 	public:
 		constexpr static bool s_twins = true;
 		constexpr static bool s_fusedXM = false;
-		constexpr static bool s_forceDomain = true;
+		constexpr static bool s_forceDomain = false;
 
 		void init_generation(Island<S>& island);
 		void init_wave(Island<S>&) {}
