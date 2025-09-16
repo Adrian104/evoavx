@@ -106,10 +106,10 @@ namespace evo
 		ENABLED
 	};
 
-	enum class Picker
+	enum class Pairing
 	{
-		RANDOM,
-		SHUFFLE
+		WITH_REPLACEMENT,
+		WITHOUT_REPLACEMENT
 	};
 
 	enum class Elitism

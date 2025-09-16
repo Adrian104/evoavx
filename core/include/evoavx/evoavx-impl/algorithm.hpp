@@ -29,7 +29,7 @@ namespace evo::cc
 		mutation.init_generation(island);
 		mutation.init_wave(island);
 
-		{ B::s_picker } -> std::convertible_to<Picker>;
+		{ B::s_pairing } -> std::convertible_to<Pairing>;
 		{ B::s_elitism } -> std::convertible_to<Elitism>;
 	};
 }
@@ -40,7 +40,7 @@ namespace evo
 		template <typename> typename SelectionT,
 		template <typename> typename CrossoverT,
 		template <typename, bool> typename MutationT,
-		Picker picker = Picker::SHUFFLE,
+		Pairing pairing = Pairing::WITHOUT_REPLACEMENT,
 		Elitism elitism = Elitism::ENABLED>
 	class Blueprint
 	{
@@ -55,7 +55,7 @@ namespace evo
 		using mutation_t = MutationT<S, crossover_t<S>::s_forceDomain
 			|| S::force_domain_v == ForceDomain::ENABLED>;
 
-		constexpr static Picker s_picker = picker;
+		constexpr static Pairing s_pairing = pairing;
 		constexpr static Elitism s_elitism = elitism;
 	};
 
@@ -85,8 +85,8 @@ namespace evo
 		void evolve(Island<S>& island) override;
 
 	private:
-		void perform_xm(Island<S>& island) requires (B::s_picker == Picker::RANDOM);
-		void perform_xm(Island<S>& island) requires (B::s_picker == Picker::SHUFFLE);
+		void perform_xm(Island<S>& island) requires (B::s_pairing == Pairing::WITH_REPLACEMENT);
+		void perform_xm(Island<S>& island) requires (B::s_pairing == Pairing::WITHOUT_REPLACEMENT);
 		f64_t* xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (s_fusedXM);
 		f64_t* xm_step(Island<S>& island, f64_t* a, f64_t* b, f64_t* out, bool crossover) requires (!s_fusedXM);
 	};
@@ -116,7 +116,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S, cc::blueprint<S> B>
-	inline void Algorithm<S, B>::perform_xm(Island<S>& island) requires (B::s_picker == Picker::RANDOM)
+	inline void Algorithm<S, B>::perform_xm(Island<S>& island) requires (B::s_pairing == Pairing::WITH_REPLACEMENT)
 	{
 		m_crossover.init_generation(island);
 		m_mutation.init_generation(island);
@@ -172,7 +172,7 @@ namespace evo
 	}
 
 	template <cc::static_settings S, cc::blueprint<S> B>
-	inline void Algorithm<S, B>::perform_xm(Island<S>& island) requires (B::s_picker == Picker::SHUFFLE)
+	inline void Algorithm<S, B>::perform_xm(Island<S>& island) requires (B::s_pairing == Pairing::WITHOUT_REPLACEMENT)
 	{
 		m_crossover.init_generation(island);
 		m_mutation.init_generation(island);
