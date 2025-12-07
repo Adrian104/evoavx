@@ -152,6 +152,7 @@ TEST_CASE("Method range_512i() (64-bit) works as expected")
 	REQUIRE(_cvtmask8_u32(_mm512_cmplt_epu64_mask(mx, ranges)) == 0xFF);
 }
 
+#ifdef EVO_USE_IFMA52
 TEST_CASE("Method range_512i() (52-bit) works as expected")
 {
 	constexpr static evo::u64_t s_seed = 42;
@@ -209,3 +210,4 @@ TEST_CASE("Method range_512i() (52-bit) works as expected")
 
 	REQUIRE(_cvtmask8_u32(_mm512_cmplt_epu64_mask(mx, ranges)) == 0xFF);
 }
+#endif

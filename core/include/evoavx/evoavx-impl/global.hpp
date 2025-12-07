@@ -88,9 +88,11 @@ namespace evo
 
 	enum class RangeAlg
 	{
+#ifdef EVO_USE_IFMA52
 		LEMIRE_52,
-		LEMIRE_64,
 		LEMIRE_52_UNBIASED,
+#endif
+		LEMIRE_64,
 		LEMIRE_64_UNBIASED
 	};
 

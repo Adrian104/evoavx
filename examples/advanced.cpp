@@ -152,8 +152,13 @@ int main(int argc, char** argv)
 	MPI_Comm graph;
 	MPI_Graph_create(MPI_COMM_WORLD, size, indices.data(), edges.data(), 1, &graph);
 
+#ifdef EVO_USE_IFMA52
 	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52,
 		evo::FusedXM::AUTO, evo::ForceDomain::AUTO, evo::Cache::ENABLED_CRC_32>;
+#else
+	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64,
+		evo::FusedXM::AUTO, evo::ForceDomain::AUTO, evo::Cache::ENABLED_CRC_32>;
+#endif
 
 	evo::Evolution<settings> evolution;
 	for (int i = 0; i < 42; i++)

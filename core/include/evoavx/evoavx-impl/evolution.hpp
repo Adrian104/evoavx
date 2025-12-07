@@ -11,8 +11,13 @@
 
 namespace evo
 {
+#ifdef EVO_USE_IFMA52
 	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_52,
 		FusedXM::AUTO, ForceDomain::AUTO, Cache::DISABLED>;
+#else
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64,
+		FusedXM::AUTO, ForceDomain::AUTO, Cache::DISABLED>;
+#endif
 
 	template <cc::static_settings S = DefaultStaticSettings>
 	class Evolution : private Island<S>

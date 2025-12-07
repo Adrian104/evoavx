@@ -9,21 +9,34 @@ namespace evo
 	private:
 		using engine_t = typename S::prng_engine_t;
 		constexpr static RangeAlg s_rangeAlg = S::range_alg_v;
+
+#ifdef EVO_USE_IFMA52
 		constexpr static bool s_alg64 = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_64;
 		constexpr static bool s_alg52 = s_rangeAlg == RangeAlg::LEMIRE_52_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_52;
 		constexpr static bool s_unbiased = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_52_UNBIASED;
+#else
+		constexpr static bool s_alg64 = true;
+		constexpr static bool s_alg52 = false;
+		constexpr static bool s_unbiased = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED;
+#endif
 
 	public:
 		__m512d next_512d() noexcept;
 		__m512i range_512i(__m512i range) noexcept requires (s_alg64);
 		__m512i range_512i(__m512i range, __m512i t) noexcept requires (s_alg64);
+
+#ifdef EVO_USE_IFMA52
 		__m512i range_512i(__m512i range) noexcept requires (s_alg52);
 		__m512i range_512i(__m512i range, __m512i t) noexcept requires (s_alg52);
+#endif
 
 		static __m512i compute_t(u64_t range) noexcept requires (s_alg64);
 		static __m512i compute_t(__m512i range) noexcept requires (s_alg64);
+
+#ifdef EVO_USE_IFMA52
 		static __m512i compute_t(u64_t range) noexcept requires (s_alg52);
 		static __m512i compute_t(__m512i range) noexcept requires (s_alg52);
+#endif
 	};
 }
 
@@ -77,6 +90,7 @@ namespace evo
 		return mulhi_512i64(source, range);
 	}
 
+#ifdef EVO_USE_IFMA52
 	template <cc::static_settings S>
 	inline __m512i Random<S>::range_512i(__m512i range) noexcept requires (s_alg52)
 	{
@@ -114,6 +128,7 @@ namespace evo
 
 		return _mm512_madd52hi_epu64(_mm512_setzero_si512(), source, range);
 	}
+#endif
 
 #ifdef EVO_COMPILER_MSVC
 #pragma warning(push)
@@ -156,6 +171,7 @@ namespace evo
 #pragma warning(pop)
 #endif
 
+#ifdef EVO_USE_IFMA52
 	template <cc::static_settings S>
 	inline __m512i Random<S>::compute_t([[maybe_unused]] u64_t range) noexcept requires (s_alg52)
 	{
@@ -187,4 +203,5 @@ namespace evo
 		else
 			return _mm512_setzero_si512();
 	}
+#endif
 }

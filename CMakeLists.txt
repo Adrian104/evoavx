@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(evoavx-root LANGUAGES CXX)
 
+option(EVOAVX_ENABLE_IFMA52 "Enable AVX-512IFMA52 instructions" ON)
 option(EVOAVX_BUILD_TESTS "Build unit tests for EvoAVX" ${PROJECT_IS_TOP_LEVEL})
 option(EVOAVX_BUILD_EXAMPLES "Build examples for EvoAVX" ${PROJECT_IS_TOP_LEVEL})
 

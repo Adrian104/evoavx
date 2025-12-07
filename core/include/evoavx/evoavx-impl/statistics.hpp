@@ -154,8 +154,8 @@ namespace evo
 		u32_t minBits = _cvtmask8_u32(_mm512_cmpeq_pd_mask(min, hmin512));
 		u32_t maxBits = _cvtmask8_u32(_mm512_cmpeq_pd_mask(max, hmax512));
 
-		m_minimumPos = minPosArray[_tzcnt_u32(minBits)];
-		m_maximumPos = maxPosArray[_tzcnt_u32(maxBits)];
+		m_minimumPos = minPosArray[std::countr_zero(minBits)];
+		m_maximumPos = maxPosArray[std::countr_zero(maxBits)];
 
 		f64_t hsum1 = _mm512_reduce_add_pd(sum1);
 		f64_t hsum2 = _mm512_reduce_add_pd(sum2);
