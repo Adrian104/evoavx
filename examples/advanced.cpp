@@ -52,8 +52,8 @@ public:
 		if (m_rank == 0)
 		{
 			std::cout << "\n Island with rank 0:\n\n";
-			std::cout << "    gen  stag     maximum     minimum        mean       stdev       wtime\n";
-			std::cout << " ------------------------------------------------------------------------\n" << std::flush;
+			std::cout << "    gen  stag    maximum    minimum       mean      stdev      wtime\n";
+			std::cout << " -------------------------------------------------------------------\n" << std::flush;
 		}
 	}
 
@@ -74,11 +74,11 @@ public:
 		{
 			std::cout << std::setw(7) << std::right << stats.m_generation;
 			std::cout << std::setw(6) << std::right << stats.m_stagnation;
-			std::cout << std::setw(12) << std::scientific << std::setprecision(4) << stats.m_maximum;
-			std::cout << std::setw(12) << std::scientific << std::setprecision(4) << stats.m_minimum;
-			std::cout << std::setw(12) << std::scientific << std::setprecision(4) << stats.m_mean;
-			std::cout << std::setw(12) << std::scientific << std::setprecision(4) << stats.m_stdev;
-			std::cout << std::setw(12) << std::scientific << std::setprecision(4) << stats.m_wtime << std::endl;
+			std::cout << std::setw(11) << std::scientific << std::setprecision(3) << stats.m_maximum;
+			std::cout << std::setw(11) << std::scientific << std::setprecision(3) << stats.m_minimum;
+			std::cout << std::setw(11) << std::scientific << std::setprecision(3) << stats.m_mean;
+			std::cout << std::setw(11) << std::scientific << std::setprecision(3) << stats.m_stdev;
+			std::cout << std::setw(11) << std::scientific << std::setprecision(3) << stats.m_wtime << std::endl;
 		}
 
 		return stats.m_wtime < 1.0 ? evo::Action::CONTINUE : evo::Action::STOP;
@@ -93,12 +93,23 @@ public:
 			std::cout << "\n Best solution found:\n";
 			std::cout << " --------------------\n";
 			std::cout << " Value: " << result.m_score;
-			std::cout << "\n Arguments:\n";
+			std::cout << "\n Arguments:\n  ";
+
+			std::size_t c = 0;
+			std::size_t last = result.m_args.size();
 
 			for (evo::f64_t arg : result.m_args)
-				std::cout << "   " << arg << '\n';
+			{
+				std::cout << ' ' << arg;
 
-			std::cout << "\n Optimization took " << result.m_wtime << " seconds\n\n";
+				if (++c < last)
+					std::cout << ',';
+
+				if (c % 5 == 0)
+					std::cout << "\n  ";
+			}
+
+			std::cout << "\n\n Optimization took " << result.m_wtime << " seconds\n\n";
 		}
 	}
 };
