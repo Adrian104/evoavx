@@ -11,7 +11,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set(EVOAVX_COMPILER_FLAGS /W4 /arch:AVX512)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_compile_definitions(${PROJECT_NAME} INTERFACE EVO_OS_LINUX)
-	set(EVOAVX_COMPILER_FLAGS -Wall -Wextra -Wpedantic -mavx512f -mavx512dq)
+	set(EVOAVX_COMPILER_FLAGS -Wall -Wextra -Wpedantic -Wno-ignored-attributes -mavx512f -mavx512dq)
 
 	if(${EVOAVX_ENABLE_IFMA52})
 		target_compile_definitions(${PROJECT_NAME} INTERFACE EVO_USE_IFMA52)
