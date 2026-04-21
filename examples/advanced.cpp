@@ -164,10 +164,10 @@ int main(int argc, char** argv)
 	MPI_Graph_create(MPI_COMM_WORLD, size, indices.data(), edges.data(), 1, &graph);
 
 #ifdef EVO_USE_IFMA52
-	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52,
+	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_52_FAST,
 		evo::FusedXM::AUTO, evo::ForceDomain::AUTO, evo::Cache::ENABLED_CRC_32>;
 #else
-	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64,
+	using settings = evo::StaticSettings<evo::Xoshiro256pp<evo::SplitMix64>, evo::RangeAlg::LEMIRE_64_FAST,
 		evo::FusedXM::AUTO, evo::ForceDomain::AUTO, evo::Cache::ENABLED_CRC_32>;
 #endif
 

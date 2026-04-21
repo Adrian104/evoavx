@@ -12,10 +12,10 @@
 namespace evo
 {
 #ifdef EVO_USE_IFMA52
-	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_52,
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_52_FAST,
 		FusedXM::AUTO, ForceDomain::AUTO, Cache::DISABLED>;
 #else
-	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64,
+	using DefaultStaticSettings = StaticSettings<Xoshiro256pp<SplitMix64>, RangeAlg::LEMIRE_64_FAST,
 		FusedXM::AUTO, ForceDomain::AUTO, Cache::DISABLED>;
 #endif
 

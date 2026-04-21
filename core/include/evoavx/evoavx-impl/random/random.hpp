@@ -11,8 +11,8 @@ namespace evo
 		constexpr static RangeAlg s_rangeAlg = S::range_alg_v;
 
 #ifdef EVO_USE_IFMA52
-		constexpr static bool s_alg64 = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_64;
-		constexpr static bool s_alg52 = s_rangeAlg == RangeAlg::LEMIRE_52_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_52;
+		constexpr static bool s_alg64 = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_64_FAST;
+		constexpr static bool s_alg52 = s_rangeAlg == RangeAlg::LEMIRE_52_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_52_FAST;
 		constexpr static bool s_unbiased = s_rangeAlg == RangeAlg::LEMIRE_64_UNBIASED || s_rangeAlg == RangeAlg::LEMIRE_52_UNBIASED;
 #else
 		constexpr static bool s_alg64 = true;
